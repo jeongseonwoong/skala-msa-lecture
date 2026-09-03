@@ -1,0 +1,591 @@
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { evaluationApi } from "@/api/evaluation.js";
+
+const WATCHLIST_KEY = "md_watchlist_sellers";
+
+/**
+ * 목업 셀러 평가 데이터.
+ * 실제 GET /api/evaluation/sellers 응답이 연동되면 fetchSellers()에서
+ * 이 배열 대신 API 응답을 사용하도록 대체된다 (현재는 API 실패/빈 응답 시 폴백으로 사용).
+ * 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
+ */
+const MOCK_SELLERS = [
+  {
+    id: 1,
+    name: "그린리빙",
+    category: "생활용품",
+    grade: "EXCELLENT",
+    score: 92,
+    joinedAt: "2024-03-12",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 540,
+      categoryAvgSales30d: 380,
+      sales7d: 130,
+      salesPrev7d: 122,
+      cancelRate: 3.8,
+      refundRate: 2.1,
+      revenue30d: 26400000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 0,
+    },
+    issues: [],
+    review: {
+      totalReviews: 214,
+      negativeMentions: [{ tag: "배송 지연", count: 2, trend: "변동 없음" }],
+      positiveMentions: [
+        { tag: "빠른 배송", count: 58 },
+        { tag: "꼼꼼한 포장", count: 41 },
+      ],
+      sampleQuote: "포장이 꼼꼼하고 배송도 빨라서 만족스러워요.",
+    },
+  },
+  {
+    id: 2,
+    name: "프레시푸드",
+    category: "식품",
+    grade: "EXCELLENT",
+    score: 88,
+    joinedAt: "2023-11-02",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 610,
+      categoryAvgSales30d: 420,
+      sales7d: 150,
+      salesPrev7d: 148,
+      cancelRate: 4.5,
+      refundRate: 3.4,
+      revenue30d: 31200000,
+      minRevenueThreshold: 4000000,
+      daysSinceLastOrder: 0,
+    },
+    issues: [],
+    review: {
+      totalReviews: 305,
+      negativeMentions: [{ tag: "포장 파손", count: 4, trend: "+10%" }],
+      positiveMentions: [{ tag: "신선도", count: 80 }],
+      sampleQuote: "신선식품인데 포장도 신경써주셔서 좋았어요.",
+    },
+  },
+  {
+    id: 3,
+    name: "데일리키친",
+    category: "식품",
+    grade: "EXCELLENT",
+    score: 81,
+    joinedAt: "2024-06-20",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 300,
+      categoryAvgSales30d: 290,
+      sales7d: 58,
+      salesPrev7d: 92,
+      cancelRate: 6.2,
+      refundRate: 4.0,
+      revenue30d: 12500000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 1,
+    },
+    issues: [
+      {
+        type: "SALES_DECLINING",
+        severity: 0.35,
+        detail: "최근 7일 판매량이 이전 7일 대비 37% 감소 (58건 vs 92건)",
+      },
+    ],
+    review: {
+      totalReviews: 96,
+      negativeMentions: [{ tag: "배송 지연", count: 6, trend: "+20%" }],
+      positiveMentions: [{ tag: "맛", count: 30 }],
+      sampleQuote: "맛은 좋은데 최근 배송이 조금 늦어졌어요.",
+    },
+  },
+  {
+    id: 4,
+    name: "루미코스메틱",
+    category: "뷰티",
+    grade: "WARNING",
+    score: 68,
+    joinedAt: "2024-01-08",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 210,
+      categoryAvgSales30d: 260,
+      sales7d: 48,
+      salesPrev7d: 55,
+      cancelRate: 8.5,
+      refundRate: 13.4,
+      revenue30d: 9800000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 1,
+    },
+    issues: [
+      {
+        type: "HIGH_REFUND_RATE",
+        severity: 0.55,
+        detail: "환불율 13.4% (기준 10% 초과)",
+      },
+    ],
+    review: {
+      totalReviews: 152,
+      negativeMentions: [
+        { tag: "가품 의심", count: 11, trend: "최근 2주 3배 급증" },
+        { tag: "변질/불량", count: 6, trend: "+50%" },
+      ],
+      positiveMentions: [{ tag: "향", count: 22 }],
+      sampleQuote: "향은 좋은데 이거 정품 맞나요? 포장이 이상해요.",
+    },
+  },
+  {
+    id: 5,
+    name: "테크가전마켓",
+    category: "가전디지털",
+    grade: "WARNING",
+    score: 61,
+    joinedAt: "2023-09-30",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 175,
+      categoryAvgSales30d: 220,
+      sales7d: 40,
+      salesPrev7d: 46,
+      cancelRate: 18.7,
+      refundRate: 7.2,
+      revenue30d: 41000000,
+      minRevenueThreshold: 5000000,
+      daysSinceLastOrder: 2,
+    },
+    issues: [
+      {
+        type: "HIGH_CANCEL_RATE",
+        severity: 0.5,
+        detail: "취소·반품율 18.7% (기준 15% 초과)",
+      },
+    ],
+    review: {
+      totalReviews: 88,
+      negativeMentions: [
+        { tag: "CS 불친절", count: 9, trend: "+40%" },
+        { tag: "배송 지연", count: 5, trend: "+15%" },
+      ],
+      positiveMentions: [{ tag: "가격", count: 14 }],
+      sampleQuote: "문의했는데 답변이 너무 늦고 퉁명스러웠어요.",
+    },
+  },
+  {
+    id: 6,
+    name: "스포츠올데이",
+    category: "스포츠",
+    grade: "WARNING",
+    score: 55,
+    joinedAt: "2024-04-14",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 95,
+      categoryAvgSales30d: 230,
+      sales7d: 18,
+      salesPrev7d: 30,
+      cancelRate: 9.1,
+      refundRate: 5.5,
+      revenue30d: 6200000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 3,
+    },
+    issues: [
+      {
+        type: "LOW_SALES",
+        severity: 0.45,
+        detail:
+          "최근 30일 판매량이 카테고리 평균 대비 41% 수준 (95건 vs 평균 230건)",
+      },
+      {
+        type: "SALES_DECLINING",
+        severity: 0.4,
+        detail: "최근 7일 판매량이 이전 7일 대비 40% 감소 (18건 vs 30건)",
+      },
+    ],
+    review: {
+      totalReviews: 41,
+      negativeMentions: [{ tag: "사이즈 불일치", count: 5, trend: "+25%" }],
+      positiveMentions: [{ tag: "품질", count: 9 }],
+      sampleQuote: "사이즈가 설명과 다르게 와서 반품했어요.",
+    },
+  },
+  {
+    id: 7,
+    name: "패션큐브",
+    category: "패션",
+    grade: "WARNING",
+    score: 58,
+    joinedAt: "2023-12-01",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 260,
+      categoryAvgSales30d: 300,
+      sales7d: 42,
+      salesPrev7d: 78,
+      cancelRate: 16.8,
+      refundRate: 8.9,
+      revenue30d: 15300000,
+      minRevenueThreshold: 4000000,
+      daysSinceLastOrder: 1,
+    },
+    issues: [
+      {
+        type: "SALES_DECLINING",
+        severity: 0.55,
+        detail: "최근 7일 판매량이 이전 7일 대비 46% 감소 (42건 vs 78건)",
+      },
+      {
+        type: "HIGH_CANCEL_RATE",
+        severity: 0.35,
+        detail: "취소·반품율 16.8% (기준 15% 초과)",
+      },
+    ],
+    review: {
+      totalReviews: 120,
+      negativeMentions: [{ tag: "사이즈 불일치", count: 14, trend: "+30%" }],
+      positiveMentions: [{ tag: "디자인", count: 33 }],
+      sampleQuote: "디자인은 예쁜데 사이즈가 자주 안 맞아요.",
+    },
+  },
+  {
+    id: 8,
+    name: "뷰티드림",
+    category: "뷰티",
+    grade: "WARNING",
+    score: 72,
+    joinedAt: "2024-07-02",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 190,
+      categoryAvgSales30d: 260,
+      sales7d: 40,
+      salesPrev7d: 44,
+      cancelRate: 7.0,
+      refundRate: 6.1,
+      revenue30d: 2600000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 2,
+    },
+    issues: [
+      {
+        type: "LOW_REVENUE",
+        severity: 0.3,
+        detail: "최근 30일 매출 260만원 (카테고리 최소 유지 기준 300만원 미달)",
+      },
+    ],
+    review: {
+      totalReviews: 64,
+      negativeMentions: [{ tag: "배송 지연", count: 3, trend: "변동 없음" }],
+      positiveMentions: [{ tag: "가성비", count: 19 }],
+      sampleQuote: "가격 대비 괜찮은데 매출은 아직 적은 편인가봐요.",
+    },
+  },
+  {
+    id: 9,
+    name: "빈티지클로젯",
+    category: "패션",
+    grade: "REVIEW",
+    score: 38,
+    joinedAt: "2023-05-19",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 130,
+      categoryAvgSales30d: 300,
+      sales7d: 20,
+      salesPrev7d: 35,
+      cancelRate: 23.4,
+      refundRate: 16.8,
+      revenue30d: 4100000,
+      minRevenueThreshold: 4000000,
+      daysSinceLastOrder: 4,
+    },
+    issues: [
+      {
+        type: "HIGH_CANCEL_RATE",
+        severity: 0.85,
+        detail: "취소·반품율 23.4% (기준 15% 초과, 심각)",
+      },
+      {
+        type: "HIGH_REFUND_RATE",
+        severity: 0.75,
+        detail: "환불율 16.8% (기준 10% 초과, 심각)",
+      },
+      {
+        type: "LOW_SALES",
+        severity: 0.5,
+        detail:
+          "최근 30일 판매량이 카테고리 평균 대비 43% 수준 (130건 vs 평균 300건)",
+      },
+      {
+        type: "SALES_DECLINING",
+        severity: 0.45,
+        detail: "최근 7일 판매량이 이전 7일 대비 43% 감소 (20건 vs 35건)",
+      },
+    ],
+    review: {
+      totalReviews: 77,
+      negativeMentions: [
+        { tag: "배송 지연", count: 18, trend: "최근 2주 3배 급증" },
+        { tag: "CS 불친절", count: 10, trend: "+60%" },
+        { tag: "오배송", count: 6, trend: "+80%" },
+      ],
+      positiveMentions: [{ tag: "디자인", count: 8 }],
+      sampleQuote:
+        "주문한 색상과 다른 제품이 왔고, 반품 문의에도 3일째 답이 없어요.",
+    },
+  },
+  {
+    id: 10,
+    name: "디지털허브",
+    category: "가전디지털",
+    grade: "REVIEW",
+    score: 45,
+    joinedAt: "2023-08-11",
+    sellerStatus: "ACTIVE",
+    metrics: {
+      sales30d: 88,
+      categoryAvgSales30d: 220,
+      sales7d: 12,
+      salesPrev7d: 20,
+      cancelRate: 12.0,
+      refundRate: 21.3,
+      revenue30d: 8900000,
+      minRevenueThreshold: 5000000,
+      daysSinceLastOrder: 16,
+    },
+    issues: [
+      {
+        type: "HIGH_REFUND_RATE",
+        severity: 0.9,
+        detail: "환불율 21.3% (기준 10% 초과, 심각)",
+      },
+      {
+        type: "NO_RECENT_ORDER",
+        severity: 0.6,
+        detail: "최근 16일간 신규 주문 없음 (기준 14일 초과)",
+      },
+      {
+        type: "LOW_SALES",
+        severity: 0.45,
+        detail:
+          "최근 30일 판매량이 카테고리 평균 대비 40% 수준 (88건 vs 평균 220건)",
+      },
+      {
+        type: "SALES_DECLINING",
+        severity: 0.4,
+        detail: "최근 7일 판매량이 이전 7일 대비 40% 감소 (12건 vs 20건)",
+      },
+    ],
+    review: {
+      totalReviews: 53,
+      negativeMentions: [
+        { tag: "가품 의심", count: 7, trend: "최근 2주 2.5배 급증" },
+        { tag: "AS 지연", count: 9, trend: "+35%" },
+      ],
+      positiveMentions: [{ tag: "가격", count: 6 }],
+      sampleQuote:
+        "정품 인증서가 없어서 가품이 아닌지 걱정돼요. AS 요청도 답이 없습니다.",
+    },
+  },
+  {
+    id: 11,
+    name: "홈스타일마켓",
+    category: "생활용품",
+    grade: "REVIEW",
+    score: 29,
+    joinedAt: "2023-02-25",
+    sellerStatus: "WARNING",
+    metrics: {
+      sales30d: 42,
+      categoryAvgSales30d: 260,
+      sales7d: 3,
+      salesPrev7d: 9,
+      cancelRate: 11.0,
+      refundRate: 8.0,
+      revenue30d: 980000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 19,
+    },
+    issues: [
+      {
+        type: "NO_RECENT_ORDER",
+        severity: 0.7,
+        detail: "최근 19일간 신규 주문 없음 (기준 14일 초과)",
+      },
+      {
+        type: "LOW_REVENUE",
+        severity: 0.67,
+        detail:
+          "최근 30일 매출 98만원 (카테고리 최소 유지 기준 300만원 대비 크게 미달)",
+      },
+      {
+        type: "LOW_SALES",
+        severity: 0.68,
+        detail:
+          "최근 30일 판매량이 카테고리 평균 대비 16% 수준 (42건 vs 평균 260건)",
+      },
+      {
+        type: "SALES_DECLINING",
+        severity: 0.55,
+        detail: "최근 7일 판매량이 이전 7일 대비 67% 감소 (3건 vs 9건)",
+      },
+    ],
+    review: {
+      totalReviews: 12,
+      negativeMentions: [{ tag: "응답 없음", count: 8, trend: "지속" }],
+      positiveMentions: [],
+      sampleQuote:
+        "문의를 남겼는데 셀러가 아예 응답이 없어요. 운영을 안 하는 것 같아요.",
+    },
+  },
+  {
+    id: 12,
+    name: "올가닉키즈",
+    category: "생활용품",
+    grade: "INSUFFICIENT",
+    score: null,
+    joinedAt: "2026-08-29",
+    sellerStatus: "ACTIVE",
+    insufficientNote:
+      "신규 입점 5일 차로 평가에 필요한 최소 데이터가 누적되지 않아 등급 산정을 보류합니다. (안정화까지 약 25일 소요 예정)",
+    metrics: {
+      sales30d: 6,
+      categoryAvgSales30d: 260,
+      sales7d: 4,
+      salesPrev7d: 2,
+      cancelRate: 0,
+      refundRate: 0,
+      revenue30d: 180000,
+      minRevenueThreshold: 3000000,
+      daysSinceLastOrder: 0,
+    },
+    issues: [],
+    review: {
+      totalReviews: 2,
+      negativeMentions: [],
+      positiveMentions: [{ tag: "포장", count: 2 }],
+      sampleQuote: "아직 후기가 많지 않아요.",
+    },
+  },
+];
+
+function loadWatchlist() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
+    return Array.isArray(raw) ? raw : [];
+  } catch {
+    return [];
+  }
+}
+
+export const useEvaluationStore = defineStore("evaluation", () => {
+  const sellers = ref([]);
+  const loading = ref(false);
+  const error = ref(null);
+  const usingMock = ref(false);
+  const watchlist = ref(loadWatchlist());
+
+  function persistWatchlist() {
+    localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlist.value));
+  }
+
+  function isWatched(sellerId) {
+    return watchlist.value.includes(Number(sellerId));
+  }
+
+  function toggleWatch(sellerId) {
+    const id = Number(sellerId);
+    watchlist.value = isWatched(id)
+      ? watchlist.value.filter((v) => v !== id)
+      : [...watchlist.value, id];
+    persistWatchlist();
+  }
+
+  async function fetchSellers() {
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const res = await evaluationApi.getSellers();
+      console.log("[EvaluationStore] getSellers response =", res.data);
+
+      const raw = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
+
+      if (raw.length) {
+        sellers.value = raw;
+        usingMock.value = false;
+      } else {
+        throw new Error("empty response");
+      }
+    } catch (e) {
+      console.warn(
+        "[EvaluationStore] API 미연동 또는 실패 - 목업 데이터로 대체합니다:",
+        e.message,
+      );
+      sellers.value = MOCK_SELLERS;
+      usingMock.value = true;
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  function getSellerById(id) {
+    return sellers.value.find((s) => String(s.id) === String(id)) || null;
+  }
+
+  async function updateSellerStatus(sellerId, status) {
+    try {
+      await evaluationApi.updateSellerStatus(sellerId, status);
+    } catch (e) {
+      console.warn(
+        "[EvaluationStore] 상태 확정 API 미연동(Sprint2) - 화면에만 반영합니다:",
+        e.message,
+      );
+    } finally {
+      const target = getSellerById(sellerId);
+      if (target) target.sellerStatus = status;
+    }
+  }
+
+  const gradeCounts = computed(() => {
+    const counts = { EXCELLENT: 0, WARNING: 0, REVIEW: 0, INSUFFICIENT: 0 };
+    sellers.value.forEach((s) => {
+      if (counts[s.grade] !== undefined) counts[s.grade] += 1;
+    });
+    return counts;
+  });
+
+  // MD가 오늘 확인해야 할 순서대로 정렬 (퇴출검토 > 주의 > 평가보류, 그 안에서는 점수 낮은 순)
+  const priorityQueue = computed(() => {
+    const rank = { REVIEW: 0, WARNING: 1, INSUFFICIENT: 2, EXCELLENT: 3 };
+    return [...sellers.value]
+      .filter((s) => s.grade !== "EXCELLENT")
+      .sort((a, b) => {
+        if (rank[a.grade] !== rank[b.grade])
+          return rank[a.grade] - rank[b.grade];
+        return (a.score ?? 0) - (b.score ?? 0);
+      });
+  });
+
+  return {
+    sellers,
+    loading,
+    error,
+    usingMock,
+    watchlist,
+    isWatched,
+    toggleWatch,
+    fetchSellers,
+    getSellerById,
+    updateSellerStatus,
+    gradeCounts,
+    priorityQueue,
+  };
+});

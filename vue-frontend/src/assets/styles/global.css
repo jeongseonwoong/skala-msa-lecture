@@ -16,6 +16,9 @@
   --color-warning: #854F0B;
   --color-warning-light: #FAEEDA;
   --color-danger: #dc2626;
+  --color-danger-light: #FDE7E7;
+  --color-neutral: #6b7280;
+  --color-neutral-light: #F1F5F9;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
