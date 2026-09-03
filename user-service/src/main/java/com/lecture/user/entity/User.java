@@ -34,6 +34,11 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    // 셀러 운영 상태 (SELLER 역할만 값 존재, MD/BUYER는 null)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seller_status")
+    private SellerStatus sellerStatus;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -42,6 +47,14 @@ public class User {
     private LocalDateTime updatedAt;
 
     public enum Role {
-        STUDENT, INSTRUCTOR
+        MD,       // 솔루션 운영자(카테고리 MD) - 우리 서비스 로그인 유저
+        SELLER,   // 평가 대상 셀러
+        BUYER     // 주문을 발생시키는 소비자(데이터 소스)
+    }
+
+    public enum SellerStatus {
+        ACTIVE,       // 정상 입점 유지
+        WARNING,      // 경고
+        TERMINATED    // 퇴출
     }
 }

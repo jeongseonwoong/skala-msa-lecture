@@ -30,7 +30,7 @@ public class UserDto {
         @NotBlank(message = "이름은 필수입니다")
         private String name;
 
-        private User.Role role; // STUDENT or INSTRUCTOR
+        private User.Role role; // MD or SELLER or BUYER
     }
 
     // 사용자 정보 응답
@@ -43,6 +43,7 @@ public class UserDto {
         private String email;
         private String name;
         private User.Role role;
+        private User.SellerStatus sellerStatus;
         private LocalDateTime createdAt;
 
         public static UserResponse from(User user) {
@@ -51,6 +52,7 @@ public class UserDto {
                     .email(user.getEmail())
                     .name(user.getName())
                     .role(user.getRole())
+                    .sellerStatus(user.getSellerStatus())
                     .createdAt(user.getCreatedAt())
                     .build();
         }
