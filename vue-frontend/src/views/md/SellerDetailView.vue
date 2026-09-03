@@ -137,7 +137,7 @@
           <div class="no-issue-banner">✅ 현재 감지된 운영 이슈가 없습니다.</div>
         </section>
 
-        <!-- 리뷰/CS 감성 분석 -->
+        <!-- 리뷰/CS 감성 분석 (Sprint 2: LLM 비정형 데이터 분석 연동 예정) -->
         <section v-if="seller.review">
           <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
           <div class="review-panel">
@@ -175,7 +175,9 @@
         </section>
         <section v-else>
           <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
-          <p class="empty-text">리뷰 감성 분석은 준비 중입니다.</p>
+          <div class="no-issue-banner" style="background:var(--color-bg-tertiary);color:var(--color-text-secondary);">
+            리뷰·CS 비정형 데이터 감성 분석은 Sprint 2에서 연동됩니다.
+          </div>
         </section>
       </main>
 

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -55,5 +57,14 @@ public class UserController {
     public ResponseEntity<UserDto.UserResponse> getUserInternal(@PathVariable Long id) {
         UserDto.UserResponse response = userService.getUserById(id);
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * GET /users/internal/sellers - 전체 셀러 목록 (셀러 평가 서비스가 평가 대상 열거용으로 호출)
+     * - 래퍼 없이 UserResponse 리스트만 직접 반환
+     */
+    @GetMapping("/internal/sellers")
+    public ResponseEntity<List<UserDto.UserResponse>> getAllSellers() {
+        return ResponseEntity.ok(userService.getAllSellers());
     }
 }

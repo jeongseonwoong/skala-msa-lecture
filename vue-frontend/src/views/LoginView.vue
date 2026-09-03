@@ -155,7 +155,7 @@ const error = ref('')
 const success = ref('')
 
 // 백엔드 User.Role enum이 아직 STUDENT/INSTRUCTOR라 MD 대신 INSTRUCTOR로 가입
-const registerForm = ref({ name: '', email: '', password: '', role: 'INSTRUCTOR' })
+const registerForm = ref({ name: '', email: '', password: '', role: 'MD' })
 
 const features = ['오늘 확인할 셀러 우선순위 제공', 'AI 리뷰·CS 감성 분석', '등급별 셀러 랭킹']
 
@@ -201,7 +201,7 @@ async function handleRegister() {
   try {
     await authApi.register(registerForm.value)
     success.value = '회원가입 완료! 로그인 페이지로 이동합니다.'
-    registerForm.value = { name: '', email: '', password: '', role: 'INSTRUCTOR' }
+    registerForm.value = { name: '', email: '', password: '', role: 'MD' }
     setTimeout(() => {
       showRegister.value = false
       success.value = ''

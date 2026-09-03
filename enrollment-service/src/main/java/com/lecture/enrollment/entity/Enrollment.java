@@ -9,8 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "enrollments",
-       uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "course_id"}))
+// 주문 도메인: 한 구매자가 같은 상품을 여러 번 주문할 수 있으므로 (user_id, course_id) 유니크 제약 없음
+@Table(name = "enrollments")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

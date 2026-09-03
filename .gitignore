@@ -6,3 +6,6 @@ msa-lecture-images.part.*
 
 # OS files
 .DS_Store
+
+# 로컬 무네트워크 빌드 산출물 (scripts/build-local.sh)
+*/build-local/

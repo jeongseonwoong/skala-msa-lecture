@@ -26,15 +26,33 @@ NO_RECENT_ORDER_DAYS = 14
 # LOW_REVENUE: 최근 30일 매출 < 카테고리별 최소 유지 기준액(원)
 #   - 데이터가 아니라 비즈니스 설정값이므로 여기에 상수로 둔다(백엔드 협의 불필요).
 #   - 카테고리 문자열은 order-service 가 내려주는 category 값과 대문자로 맞춘다.
+# 카테고리 코드는 init-db / course-service Course.Category 와 동일하게 맞춘다.
 CATEGORY_MIN_REVENUE_30D = {
     "FASHION": 3_000_000,
     "BEAUTY": 2_000_000,
     "FOOD": 2_500_000,
-    "LIVING": 2_000_000,
     "DIGITAL": 5_000_000,
-    "ETC": 1_000_000,
+    "HOME": 2_000_000,
+    "SPORTS": 2_000_000,
+    "BOOK": 1_500_000,
+    "OTHER": 1_000_000,
 }
 CATEGORY_MIN_REVENUE_DEFAULT = 1_000_000
+
+# 프론트 표시용 한글 라벨 (enrollment-service normalizeCategory 와 일치)
+CATEGORY_LABELS = {
+    "FASHION": "패션",
+    "BEAUTY": "뷰티",
+    "FOOD": "식품",
+    "DIGITAL": "디지털",
+    "HOME": "홈/리빙",
+    "SPORTS": "스포츠",
+    "BOOK": "도서",
+    "OTHER": "기타",
+}
+
+# 평가에 필요한 최소 누적 주문 수. 미만이면 등급 산정 보류(INSUFFICIENT).
+MIN_ORDERS_FOR_EVALUATION = 5
 
 
 # ---------------------------------------------------------------------------

@@ -8,6 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -45,6 +47,15 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
         return UserDto.UserResponse.from(user);
+    }
+
+    /**
+     * 전체 셀러 목록 조회 (셀러 평가 서비스 내부 호출용)
+     */
+    public List<UserDto.UserResponse> getAllSellers() {
+        return userRepository.findByRole(User.Role.SELLER).stream()
+                .map(UserDto.UserResponse::from)
+                .toList();
     }
 
     /**

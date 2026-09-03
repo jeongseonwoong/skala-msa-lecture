@@ -22,8 +22,9 @@ class Settings(BaseSettings):
     # 서비스 URL
     enrollment_service_url: str = "http://localhost:8083"
     course_service_url: str = "http://localhost:8082"
+    user_service_url: str = "http://localhost:8081"
 
-    # order-service (구 enrollment-service) — 셀러 지표 조회 대상.
+    # order-service (구 enrollment-service) — 셀러 주문 이력 조회 대상.
     # 미설정 시 enrollment_service_url 을 재사용한다(컨테이너는 ENROLLMENT_SERVICE_URL 만 주입).
     order_service_url: Optional[str] = None
 

@@ -126,6 +126,11 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI=http://auth-server:9000/oauth2/jwks
       - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI=http://localhost:8080
+      # 게이트웨이 이미지(SCG 4.2.0)는 소스가 없고 env 로 라우트 추가 시 strict-binding 실패.
+      # → 셀러 평가 API 는 기존 /api/recommend/** 라우트를 재사용한다
+      #   (recommend-service 라우터 prefix = /api/recommend/evaluation).
+      # → course/enrollment 컨트롤러 prefix 는 게이트웨이에 맞춰 /api/courses · /api/enrollments 로 유지.
+      # → 셀러 상태 확정(/api/sellers/**)은 Sprint 2.
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -250,7 +255,9 @@ services:
       - JWT_ISSUER_URI=http://localhost:8080
       - JWK_SET_URI=http://auth-server:9000/oauth2/jwks
       - ENROLLMENT_SERVICE_URL=http://enrollment-service:8083
+      - ORDER_SERVICE_URL=http://enrollment-service:8083
       - COURSE_SERVICE_URL=http://course-service:8082
+      - USER_SERVICE_URL=http://user-service:8081
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
       eureka-server:
@@ -262,6 +269,8 @@ services:
       enrollment-service:
         condition: service_started
       course-service:
+        condition: service_started
+      user-service:
         condition: service_started
     networks:
       - lecture-net

@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+// 물리 경로는 /api/enrollments 유지 (게이트웨이 라우트가 고정, 재빌드 불가). 도메인 의미만 '주문'.
+@RequestMapping("/api/enrollments")
 @RequiredArgsConstructor
 public class EnrollmentController {
 

@@ -1,0 +1,36 @@
+# 네트워크 없이(이미지 재빌드 없이) 로컬 소스를 반영하기 위한 오버라이드.
+# docker compose 는 docker-compose.yml + 이 파일을 자동 병합한다.
+#
+#   Java 서비스 : scripts/build-local.sh 가 만든 패치 jar 를 컨테이너 app.jar 위에 마운트
+#   recommend   : 소스 디렉터리를 컨테이너 /app 에 그대로 마운트 (Python 은 컴파일 불필요)
+#
+# 먼저 실행:  ./scripts/build-local.sh
+# 그다음:     docker compose up -d
+#
+services:
+  # auth-server 는 소스가 없어 이미지 안의 User$Role enum 에 STUDENT/INSTRUCTOR 만 존재.
+  # 신 도메인 시드(MD/SELLER/BUYER)로 로그인하면 Hibernate enum 하이드레이션 실패 →
+  # User.java 만 재구성해 enum 에 MD/SELLER/BUYER 추가한 패치 jar 를 마운트.
+  # 재생성:  아래 scripts 참고 없음 — scratchpad 에서 수동 빌드한 산출물
+  auth-server:
+    volumes:
+      - ./auth-server/build-local/app.jar:/app/app.jar:ro
+
+  user-service:
+    volumes:
+      - ./user-service/build-local/app.jar:/app/app.jar:ro
+
+  course-service:
+    volumes:
+      - ./course-service/build-local/app.jar:/app/app.jar:ro
+
+  enrollment-service:
+    volumes:
+      - ./enrollment-service/build-local/app.jar:/app/app.jar:ro
+
+  recommend-service:
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - ./recommend-service/app:/app/app:ro
+      - ./recommend-service/main.py:/app/main.py:ro
