@@ -20,6 +20,10 @@
           >
         </div>
 
+        <div v-if="!evaluationStore.loading && evaluationStore.usingMock" class="mock-banner">
+          ⚠️ 평가 API 연동 대기 중 — 아래 데이터는 샘플입니다.
+        </div>
+
         <!-- 요약 통계 -->
         <div class="stat-grid">
           <div class="stat-card">
@@ -96,7 +100,7 @@
                     <GradeBadge :grade="seller.grade" />
                   </div>
                   <div class="pc-meta">
-                    {{ seller.category }} · 종합점수 {{ seller.score ?? "-" }}점
+                    {{ seller.category || '카테고리 미상' }} · 종합점수 {{ seller.score ?? "-" }}점
                   </div>
                 </div>
               </div>
@@ -232,6 +236,16 @@ onMounted(() => {
 }
 .page-subtitle strong {
   color: var(--color-danger);
+}
+
+.mock-banner {
+  background: var(--color-warning-light);
+  color: var(--color-warning);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 20px;
 }
 
 /* 요약 통계 */

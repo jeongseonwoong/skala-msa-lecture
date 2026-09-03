@@ -16,7 +16,7 @@
                 <h1 class="header-name">{{ seller.name }}</h1>
                 <GradeBadge :grade="seller.grade" />
               </div>
-              <p class="header-meta">{{ seller.category }} · 입점 {{ seller.joinedAt }}</p>
+              <p class="header-meta">{{ seller.category || '카테고리 미상' }}<template v-if="seller.joinedAt"> · 입점 {{ seller.joinedAt }}</template></p>
               <p v-if="seller.insufficientNote" class="insufficient-banner">ℹ️ {{ seller.insufficientNote }}</p>
             </div>
           </div>
@@ -56,7 +56,7 @@
         </section>
 
         <!-- 지표 그리드 -->
-        <section>
+        <section v-if="seller.metrics">
           <h2 class="section-title">운영 지표</h2>
           <div class="metric-grid">
             <div class="metric-card" :class="{ 'metric-flag': hasIssue('LOW_SALES') }">
@@ -91,15 +91,20 @@
             </div>
           </div>
         </section>
+        <section v-else>
+          <h2 class="section-title">운영 지표</h2>
+          <p class="empty-text">세부 지표는 아래 이슈 근거를 참고하세요. (지표 API는 준비 중입니다)</p>
+        </section>
 
         <!-- 판매 상품 -->
         <section>
           <div class="section-head-row">
             <h2 class="section-title">판매 상품</h2>
-            <span class="section-count">{{ seller.products?.length ?? 0 }}개</span>
+            <span class="section-count">{{ products.length }}개</span>
           </div>
-          <div v-if="seller.products?.length" class="product-list">
-            <div v-for="product in seller.products" :key="product.id" class="product-row">
+          <div v-if="productStore.loading" class="empty-text">불러오는 중...</div>
+          <div v-else-if="products.length" class="product-list">
+            <div v-for="product in products" :key="product.id" class="product-row">
               <div class="product-info">
                 <span class="product-name">{{ product.name }}</span>
                 <span class="product-category">{{ product.category }}</span>
@@ -133,7 +138,7 @@
         </section>
 
         <!-- 리뷰/CS 감성 분석 -->
-        <section>
+        <section v-if="seller.review">
           <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
           <div class="review-panel">
             <div class="review-summary">
@@ -168,6 +173,10 @@
             <blockquote class="sample-quote">"{{ seller.review.sampleQuote }}"</blockquote>
           </div>
         </section>
+        <section v-else>
+          <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
+          <p class="empty-text">리뷰 감성 분석은 준비 중입니다.</p>
+        </section>
       </main>
 
       <main class="main-content" v-else-if="evaluationStore.loading">
@@ -190,13 +199,16 @@ import MdSidebar from '@/components/md/MdSidebar.vue'
 import GradeBadge from '@/components/md/GradeBadge.vue'
 import IssueTag from '@/components/md/IssueTag.vue'
 import { useEvaluationStore } from '@/store/evaluation.js'
+import { useProductStore } from '@/store/product.js'
 import { formatWon, formatPercent, formatRelativeDays } from '@/utils/format.js'
 import { severityLevel, SELLER_STATUS_META, PRODUCT_STATUS_META } from '@/constants/evaluation.js'
 
 const route = useRoute()
 const evaluationStore = useEvaluationStore()
+const productStore = useProductStore()
 
 const seller = computed(() => evaluationStore.getSellerById(route.params.id))
+const products = computed(() => productStore.getProductsBySeller(route.params.id))
 
 const sortedIssues = computed(() =>
   seller.value ? [...seller.value.issues].sort((a, b) => b.severity - a.severity) : []
@@ -222,6 +234,9 @@ function changeStatus(status) {
 onMounted(async () => {
   if (!evaluationStore.sellers.length) {
     await evaluationStore.fetchSellers()
+  }
+  if (!productStore.products.length) {
+    await productStore.fetchProducts()
   }
 })
 </script>

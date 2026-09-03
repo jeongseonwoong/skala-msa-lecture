@@ -25,7 +25,7 @@
                   <router-link :to="`/sellers/${seller.id}`" class="watch-name">{{ seller.name }}</router-link>
                   <GradeBadge :grade="seller.grade" />
                 </div>
-                <div class="watch-meta">{{ seller.category }} · 종합점수 {{ seller.score ?? '-' }}점</div>
+                <div class="watch-meta">{{ seller.category || '카테고리 미상' }} · 종합점수 {{ seller.score ?? '-' }}점</div>
               </div>
             </div>
 

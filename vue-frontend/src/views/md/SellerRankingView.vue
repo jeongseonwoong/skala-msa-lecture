@@ -75,7 +75,7 @@
                     {{ evaluationStore.isWatched(seller.id) ? '★' : '☆' }}
                   </button>
                 </div>
-                <div class="row-category">{{ seller.category }} · 입점 {{ seller.joinedAt }}</div>
+                <div class="row-category">{{ seller.category || '카테고리 미상' }}<template v-if="seller.joinedAt"> · 입점 {{ seller.joinedAt }}</template></div>
               </div>
             </div>
 
@@ -99,9 +99,12 @@
             </div>
 
             <div class="col-metrics">
-              <span>매출 {{ formatWon(seller.metrics.revenue30d) }}</span>
-              <span>취소 {{ formatPercent(seller.metrics.cancelRate) }}</span>
-              <span>환불 {{ formatPercent(seller.metrics.refundRate) }}</span>
+              <template v-if="seller.metrics">
+                <span>매출 {{ formatWon(seller.metrics.revenue30d) }}</span>
+                <span>취소 {{ formatPercent(seller.metrics.cancelRate) }}</span>
+                <span>환불 {{ formatPercent(seller.metrics.refundRate) }}</span>
+              </template>
+              <span v-else class="no-issue">지표 준비 중</span>
             </div>
 
             <div class="col-action">
@@ -171,9 +174,9 @@ const sortedSellers = computed(() => {
   list.sort((a, b) => {
     let av, bv
     if (field === 'score') { av = a.score ?? -1; bv = b.score ?? -1 }
-    else if (field === 'cancelRate') { av = a.metrics.cancelRate; bv = b.metrics.cancelRate }
-    else if (field === 'refundRate') { av = a.metrics.refundRate; bv = b.metrics.refundRate }
-    else if (field === 'revenue') { av = a.metrics.revenue30d; bv = b.metrics.revenue30d }
+    else if (field === 'cancelRate') { av = a.metrics?.cancelRate ?? 0; bv = b.metrics?.cancelRate ?? 0 }
+    else if (field === 'refundRate') { av = a.metrics?.refundRate ?? 0; bv = b.metrics?.refundRate ?? 0 }
+    else if (field === 'revenue') { av = a.metrics?.revenue30d ?? 0; bv = b.metrics?.revenue30d ?? 0 }
 
     return dir === 'asc' ? av - bv : bv - av
   })

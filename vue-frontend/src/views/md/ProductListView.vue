@@ -29,7 +29,7 @@
           <input v-model="keyword" type="text" class="search-input" placeholder="상품명 · 셀러명 검색" />
         </div>
 
-        <div v-if="evaluationStore.loading" class="loading-center">
+        <div v-if="productStore.loading" class="loading-center">
           <div class="spinner"></div>
         </div>
 
@@ -78,10 +78,12 @@ import AppHeader from '@/components/AppHeader.vue'
 import MdSidebar from '@/components/md/MdSidebar.vue'
 import GradeBadge from '@/components/md/GradeBadge.vue'
 import { useEvaluationStore } from '@/store/evaluation.js'
+import { useProductStore } from '@/store/product.js'
 import { formatWon } from '@/utils/format.js'
 import { PRODUCT_STATUS_META } from '@/constants/evaluation.js'
 
 const evaluationStore = useEvaluationStore()
+const productStore = useProductStore()
 
 const selectedStatus = ref('ALL')
 const keyword = ref('')
@@ -97,8 +99,20 @@ function statusMeta(status) {
   return PRODUCT_STATUS_META[status] ?? { label: status, cls: 'on-sale' }
 }
 
+// 상품(course-service)과 셀러 평가(evaluation-service) 응답을 sellerId로 조인
+const productsWithSeller = computed(() =>
+  productStore.products.map((p) => {
+    const seller = evaluationStore.getSellerById(p.sellerId)
+    return {
+      ...p,
+      sellerName: p.sellerName || seller?.name || '알 수 없음',
+      sellerGrade: seller?.grade || 'INSUFFICIENT'
+    }
+  })
+)
+
 const filteredProducts = computed(() => {
-  let list = evaluationStore.allProducts
+  let list = productsWithSeller.value
 
   if (selectedStatus.value !== 'ALL') {
     list = list.filter((p) => p.status === selectedStatus.value)
@@ -117,6 +131,9 @@ const filteredProducts = computed(() => {
 onMounted(() => {
   if (!evaluationStore.sellers.length) {
     evaluationStore.fetchSellers()
+  }
+  if (!productStore.products.length) {
+    productStore.fetchProducts()
   }
 })
 </script>
