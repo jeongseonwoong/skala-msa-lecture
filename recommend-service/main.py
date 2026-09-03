@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from app.config.settings import settings
 from app.kafka.consumer import enrollment_consumer
-from app.router import recommend_router
+from app.router import evaluation_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -48,14 +48,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Recommend Service",
-    description="온라인 강의 플랫폼 - 규칙 기반 강의 추천 서비스",
-    version="0.0.1",
+    title="Seller Evaluation Service",
+    description="이커머스 MD용 - 규칙 기반 셀러 운영 평가 엔진 (구 recommend-service)",
+    version="0.1.0",
     lifespan=lifespan
 )
 
 # 라우터 등록
-app.include_router(recommend_router.router)
+app.include_router(evaluation_router.router)
 
 
 @app.get("/health")
