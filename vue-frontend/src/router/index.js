@@ -19,33 +19,33 @@ const routes = [
     component: () => import('@/views/CallbackView.vue')
   },
   {
-    path: '/courses',
-    name: 'CourseList',
-    component: () => import('@/views/CourseListView.vue'),
+    path: '/md',
+    name: 'MdDashboard',
+    component: () => import('@/views/md/MdDashboardView.vue'),
     meta: { requiresAuth: true }
   },
   {
-    path: '/courses/new',
-    name: 'CourseCreate',
-    component: () => import('@/views/CourseCreateView.vue'),
-    meta: { requiresAuth: true, instructorOnly: true }
-  },
-  {
-    path: '/courses/:id(\\d+)',
-    name: 'CourseDetail',
-    component: () => import('@/views/CourseDetailView.vue'),
+    path: '/md/sellers',
+    name: 'SellerRanking',
+    component: () => import('@/views/md/SellerRankingView.vue'),
     meta: { requiresAuth: true }
   },
   {
-    path: '/enrollments',
-    name: 'Enrollment',
-    component: () => import('@/views/EnrollmentView.vue'),
+    path: '/md/sellers/:id(\\d+)',
+    name: 'SellerDetail',
+    component: () => import('@/views/md/SellerDetailView.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/md/watchlist',
+    name: 'MdWatchlist',
+    component: () => import('@/views/md/MdWatchlistView.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/mypage',
     name: 'MyPage',
-    component: () => import('@/views/MyPageView.vue'),
+    component: () => import('@/views/MdProfileView.vue'),
     meta: { requiresAuth: true }
   }
 ]
@@ -58,7 +58,7 @@ const router = createRouter({
   }
 })
 
-// 인증/권한 가드
+// 인증 가드 (이 서비스는 MD 전용 - 로그인하면 누구나 /md로)
 router.beforeEach((to) => {
   const auth = useAuthStore()
 
@@ -67,11 +67,7 @@ router.beforeEach((to) => {
   }
 
   if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { name: 'CourseList' }
-  }
-
-  if (to.meta.instructorOnly && auth.user?.role !== 'INSTRUCTOR') {
-    return { name: 'CourseList' }
+    return { name: 'MdDashboard' }
   }
 })
 
