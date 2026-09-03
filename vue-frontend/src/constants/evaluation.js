@@ -47,6 +47,13 @@ export const SELLER_STATUS_META = {
   TERMINATED: { label: '퇴출', cls: 'terminated' }
 }
 
+// 상품 판매 상태
+export const PRODUCT_STATUS_META = {
+  ON_SALE: { label: '판매중', cls: 'on-sale' },
+  SOLD_OUT: { label: '품절', cls: 'sold-out' },
+  HIDDEN: { label: '판매중지', cls: 'hidden' }
+}
+
 export function severityLevel(severity) {
   const v = Number(severity ?? 0)
   if (v >= 0.66) return 'high'

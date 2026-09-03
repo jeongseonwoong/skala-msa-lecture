@@ -22,10 +22,10 @@
               <div class="watch-avatar" :class="`avatar-${seller.grade?.toLowerCase()}`">{{ seller.name.charAt(0) }}</div>
               <div>
                 <div class="watch-name-row">
-                  <router-link :to="`/md/sellers/${seller.id}`" class="watch-name">{{ seller.name }}</router-link>
+                  <router-link :to="`/sellers/${seller.id}`" class="watch-name">{{ seller.name }}</router-link>
                   <GradeBadge :grade="seller.grade" />
                 </div>
-                <div class="watch-meta">{{ seller.category }} · 종합점수 {{ seller.score ?? '-' }}점</div>
+                <div class="watch-meta">{{ seller.category || '카테고리 미상' }} · 종합점수 {{ seller.score ?? '-' }}점</div>
               </div>
             </div>
 
@@ -37,7 +37,7 @@
             </div>
 
             <div class="watch-actions">
-              <router-link :to="`/md/sellers/${seller.id}`" class="btn btn-ghost btn-sm">상세보기</router-link>
+              <router-link :to="`/sellers/${seller.id}`" class="btn btn-ghost btn-sm">상세보기</router-link>
               <button class="btn btn-outline btn-sm" @click="evaluationStore.toggleWatch(seller.id)">등록 해제</button>
             </div>
           </div>
@@ -47,7 +47,7 @@
           <p class="empty-icon">⭐</p>
           <p>아직 등록한 관심 셀러가 없습니다.</p>
           <p class="empty-sub">셀러 평가 랭킹에서 ☆ 버튼을 눌러 밀착 모니터링할 셀러를 등록하세요.</p>
-          <router-link to="/md/sellers" class="btn btn-primary" style="margin-top:16px;">셀러 평가 랭킹으로 이동</router-link>
+          <router-link to="/sellers" class="btn btn-primary" style="margin-top:16px;">셀러 평가 랭킹으로 이동</router-link>
         </div>
       </main>
     </div>
