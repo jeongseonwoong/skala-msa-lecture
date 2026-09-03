@@ -15,7 +15,7 @@
               <strong>{{ priorityCount }}곳</strong>입니다.
             </p>
           </div>
-          <router-link to="/md/sellers" class="btn btn-outline"
+          <router-link to="/sellers" class="btn btn-outline"
             >전체 랭킹 보기</router-link
           >
         </div>
@@ -89,14 +89,14 @@
                 <div>
                   <div class="pc-name-row">
                     <router-link
-                      :to="`/md/sellers/${seller.id}`"
+                      :to="`/sellers/${seller.id}`"
                       class="pc-name"
                       >{{ seller.name }}</router-link
                     >
                     <GradeBadge :grade="seller.grade" />
                   </div>
                   <div class="pc-meta">
-                    {{ seller.category }} · 종합점수 {{ seller.score ?? "-" }}점
+                    {{ seller.category || '카테고리 미상' }} · 종합점수 {{ seller.score ?? "-" }}점
                   </div>
                 </div>
               </div>
@@ -131,7 +131,7 @@
                   {{ evaluationStore.isWatched(seller.id) ? "★" : "☆" }}
                 </button>
                 <router-link
-                  :to="`/md/sellers/${seller.id}`"
+                  :to="`/sellers/${seller.id}`"
                   class="btn btn-primary btn-sm"
                   >상세 확인</router-link
                 >
@@ -399,7 +399,7 @@ onMounted(() => {
 }
 .star-btn.active,
 .star-btn:hover {
-  color: #f5a623;
+  color: var(--color-star);
 }
 .btn-sm {
   padding: 7px 14px;

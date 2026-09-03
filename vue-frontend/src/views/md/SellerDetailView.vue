@@ -5,7 +5,7 @@
       <MdSidebar />
 
       <main class="main-content" v-if="seller">
-        <router-link to="/md/sellers" class="back-link">← 셀러 평가 랭킹</router-link>
+        <router-link to="/sellers" class="back-link">← 셀러 평가 랭킹</router-link>
 
         <!-- 헤더 카드 -->
         <div class="detail-header fade-in-up">
@@ -16,7 +16,7 @@
                 <h1 class="header-name">{{ seller.name }}</h1>
                 <GradeBadge :grade="seller.grade" />
               </div>
-              <p class="header-meta">{{ seller.category }} · 입점 {{ seller.joinedAt }}</p>
+              <p class="header-meta">{{ seller.category || '카테고리 미상' }}<template v-if="seller.joinedAt"> · 입점 {{ seller.joinedAt }}</template></p>
               <p v-if="seller.insufficientNote" class="insufficient-banner">ℹ️ {{ seller.insufficientNote }}</p>
             </div>
           </div>
@@ -56,7 +56,7 @@
         </section>
 
         <!-- 지표 그리드 -->
-        <section>
+        <section v-if="seller.metrics">
           <h2 class="section-title">운영 지표</h2>
           <div class="metric-grid">
             <div class="metric-card" :class="{ 'metric-flag': hasIssue('LOW_SALES') }">
@@ -91,6 +91,33 @@
             </div>
           </div>
         </section>
+        <section v-else>
+          <h2 class="section-title">운영 지표</h2>
+          <p class="empty-text">세부 지표는 아래 이슈 근거를 참고하세요. (지표 API는 준비 중입니다)</p>
+        </section>
+
+        <!-- 판매 상품 -->
+        <section>
+          <div class="section-head-row">
+            <h2 class="section-title">판매 상품</h2>
+            <span class="section-count">{{ products.length }}개</span>
+          </div>
+          <div v-if="productStore.loading" class="empty-text">불러오는 중...</div>
+          <div v-else-if="products.length" class="product-list">
+            <div v-for="product in products" :key="product.id" class="product-row">
+              <div class="product-info">
+                <span class="product-name">{{ product.name }}</span>
+                <span class="product-category">{{ product.category }}</span>
+              </div>
+              <span class="product-price">{{ formatWon(product.price) }}</span>
+              <span class="product-sales">누적 판매 {{ product.salesCount }}건</span>
+              <span class="product-status" :class="`status-${productStatusMeta(product.status).cls}`">
+                {{ productStatusMeta(product.status).label }}
+              </span>
+            </div>
+          </div>
+          <p v-else class="empty-text">등록된 상품이 없습니다.</p>
+        </section>
 
         <!-- 이슈 근거 -->
         <section v-if="seller.issues.length">
@@ -111,7 +138,7 @@
         </section>
 
         <!-- 리뷰/CS 감성 분석 -->
-        <section>
+        <section v-if="seller.review">
           <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
           <div class="review-panel">
             <div class="review-summary">
@@ -146,6 +173,10 @@
             <blockquote class="sample-quote">"{{ seller.review.sampleQuote }}"</blockquote>
           </div>
         </section>
+        <section v-else>
+          <h2 class="section-title">리뷰·CS 감성 분석 <span class="section-title-sub">(LLM 기반)</span></h2>
+          <p class="empty-text">리뷰 감성 분석은 준비 중입니다.</p>
+        </section>
       </main>
 
       <main class="main-content" v-else-if="evaluationStore.loading">
@@ -154,7 +185,7 @@
 
       <main class="main-content" v-else>
         <p class="empty-text">셀러 정보를 찾을 수 없습니다.</p>
-        <router-link to="/md/sellers" class="btn btn-primary" style="margin-top:16px;">랭킹으로 돌아가기</router-link>
+        <router-link to="/sellers" class="btn btn-primary" style="margin-top:16px;">랭킹으로 돌아가기</router-link>
       </main>
     </div>
   </div>
@@ -168,13 +199,16 @@ import MdSidebar from '@/components/md/MdSidebar.vue'
 import GradeBadge from '@/components/md/GradeBadge.vue'
 import IssueTag from '@/components/md/IssueTag.vue'
 import { useEvaluationStore } from '@/store/evaluation.js'
+import { useProductStore } from '@/store/product.js'
 import { formatWon, formatPercent, formatRelativeDays } from '@/utils/format.js'
-import { severityLevel, SELLER_STATUS_META } from '@/constants/evaluation.js'
+import { severityLevel, SELLER_STATUS_META, PRODUCT_STATUS_META } from '@/constants/evaluation.js'
 
 const route = useRoute()
 const evaluationStore = useEvaluationStore()
+const productStore = useProductStore()
 
 const seller = computed(() => evaluationStore.getSellerById(route.params.id))
+const products = computed(() => productStore.getProductsBySeller(route.params.id))
 
 const sortedIssues = computed(() =>
   seller.value ? [...seller.value.issues].sort((a, b) => b.severity - a.severity) : []
@@ -188,6 +222,10 @@ function statusLabel(status) {
   return SELLER_STATUS_META[status]?.label ?? status
 }
 
+function productStatusMeta(status) {
+  return PRODUCT_STATUS_META[status] ?? { label: status, cls: 'on-sale' }
+}
+
 function changeStatus(status) {
   if (!seller.value) return
   evaluationStore.updateSellerStatus(seller.value.id, status)
@@ -196,6 +234,9 @@ function changeStatus(status) {
 onMounted(async () => {
   if (!evaluationStore.sellers.length) {
     await evaluationStore.fetchSellers()
+  }
+  if (!productStore.products.length) {
+    await productStore.fetchProducts()
   }
 })
 </script>
@@ -303,9 +344,9 @@ onMounted(async () => {
   white-space: nowrap;
 }
 .star-btn-lg.active {
-  border-color: #f5a623;
-  color: #f5a623;
-  background: #fff8ec;
+  border-color: var(--color-star);
+  color: var(--color-star);
+  background: var(--color-star-light);
 }
 
 /* 상태 확정 */
@@ -374,6 +415,48 @@ onMounted(async () => {
   font-weight: 500;
   color: var(--color-text-muted);
 }
+.section-count {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* 판매 상품 */
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.product-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+}
+.product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.product-name { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
+.product-category { font-size: 11px; color: var(--color-text-muted); }
+.product-price { font-size: 13px; font-weight: 600; color: var(--color-text-primary); white-space: nowrap; }
+.product-sales { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+.product-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.product-status.status-on-sale { background: var(--color-success-light); color: var(--color-success); }
+.product-status.status-sold-out { background: var(--color-neutral-light); color: var(--color-neutral); }
+.product-status.status-hidden { background: var(--color-danger-light); color: var(--color-danger); }
 
 /* 지표 그리드 */
 .metric-grid {
@@ -389,7 +472,7 @@ onMounted(async () => {
 }
 .metric-flag {
   border-color: var(--color-danger);
-  background: #fff8f8;
+  background: var(--color-danger-light);
 }
 .metric-label { font-size: 12px; color: var(--color-text-muted); margin-bottom: 6px; }
 .metric-value { font-size: 20px; font-weight: 700; color: var(--color-text-primary); }
@@ -516,5 +599,6 @@ onMounted(async () => {
   .header-right { align-items: flex-start; }
   .metric-grid { grid-template-columns: 1fr 1fr; }
   .review-columns { grid-template-columns: 1fr; }
+  .product-row { flex-wrap: wrap; }
 }
 </style>

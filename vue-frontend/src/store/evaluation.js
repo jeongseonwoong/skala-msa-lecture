@@ -4,13 +4,13 @@ import { evaluationApi } from "@/api/evaluation.js";
 
 const WATCHLIST_KEY = "md_watchlist_sellers";
 
-/**
- * 목업 셀러 평가 데이터.
- * 실제 GET /api/evaluation/sellers 응답이 연동되면 fetchSellers()에서
- * 이 배열 대신 API 응답을 사용하도록 대체된다 (현재는 API 실패/빈 응답 시 폴백으로 사용).
- * 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
- */
-const MOCK_SELLERS = [
+// ============================================================
+// MOCK FALLBACK — dev 단계에서 UI 확인용으로만 쓰는 목업 데이터.
+// GET /api/evaluation/sellers 연동이 끝나면 이 배열 전체와, 이 배열을
+// 참조하는 store/product.js의 mockProducts()를 함께 지우면 된다.
+// 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
+// ============================================================
+export const MOCK_SELLERS = [
   {
     id: 1,
     name: "그린리빙",
@@ -30,6 +30,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 101, name: "천연 소재 러그 매트", category: "생활용품", price: 39000, status: "ON_SALE", salesCount: 312 },
+      { id: 102, name: "다용도 수납정리함 세트", category: "생활용품", price: 22000, status: "ON_SALE", salesCount: 228 },
+    ],
     issues: [],
     review: {
       totalReviews: 214,
@@ -60,6 +64,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 201, name: "제철 과일 정기 박스", category: "식품", price: 32000, status: "ON_SALE", salesCount: 401 },
+      { id: 202, name: "냉동 손만두 10팩", category: "식품", price: 18500, status: "ON_SALE", salesCount: 356 },
+    ],
     issues: [],
     review: {
       totalReviews: 305,
@@ -87,6 +95,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 301, name: "실리콘 주방용품 6종 세트", category: "식품", price: 27000, status: "ON_SALE", salesCount: 189 },
+      { id: 302, name: "논스틱 인덕션 프라이팬", category: "식품", price: 45000, status: "ON_SALE", salesCount: 111 },
+    ],
     issues: [
       {
         type: "SALES_DECLINING",
@@ -120,6 +132,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 401, name: "수분 진정 크림 50ml", category: "뷰티", price: 28000, status: "ON_SALE", salesCount: 142 },
+      { id: 402, name: "매트 립틴트 3종 세트", category: "뷰티", price: 21000, status: "HIDDEN", salesCount: 68 },
+    ],
     issues: [
       {
         type: "HIGH_REFUND_RATE",
@@ -156,6 +172,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 5000000,
       daysSinceLastOrder: 2,
     },
+    products: [
+      { id: 501, name: "무선 스틱 청소기", category: "가전디지털", price: 189000, status: "ON_SALE", salesCount: 96 },
+      { id: 502, name: "블루투스 이어폰", category: "가전디지털", price: 59000, status: "ON_SALE", salesCount: 79 },
+    ],
     issues: [
       {
         type: "HIGH_CANCEL_RATE",
@@ -192,6 +212,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 3,
     },
+    products: [
+      { id: 601, name: "프리미엄 요가매트", category: "스포츠", price: 34000, status: "ON_SALE", salesCount: 58 },
+      { id: 602, name: "쿠셔닝 런닝화", category: "스포츠", price: 79000, status: "ON_SALE", salesCount: 37 },
+    ],
     issues: [
       {
         type: "LOW_SALES",
@@ -231,6 +255,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 701, name: "오버사이즈 니트", category: "패션", price: 42000, status: "ON_SALE", salesCount: 121 },
+      { id: 702, name: "와이드 데님 팬츠", category: "패션", price: 38000, status: "ON_SALE", salesCount: 94 },
+    ],
     issues: [
       {
         type: "SALES_DECLINING",
@@ -269,6 +297,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 2,
     },
+    products: [
+      { id: 801, name: "저자극 선크림 SPF50", category: "뷰티", price: 19000, status: "ON_SALE", salesCount: 88 },
+      { id: 802, name: "약산성 클렌징 오일", category: "뷰티", price: 23000, status: "ON_SALE", salesCount: 61 },
+    ],
     issues: [
       {
         type: "LOW_REVENUE",
@@ -302,6 +334,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 4,
     },
+    products: [
+      { id: 901, name: "빈티지 플라워 원피스", category: "패션", price: 45000, status: "ON_SALE", salesCount: 43 },
+      { id: 902, name: "체크 패턴 셔츠", category: "패션", price: 33000, status: "SOLD_OUT", salesCount: 51 },
+    ],
     issues: [
       {
         type: "HIGH_CANCEL_RATE",
@@ -356,6 +392,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 5000000,
       daysSinceLastOrder: 16,
     },
+    products: [
+      { id: 1001, name: "스마트워치 GT3", category: "가전디지털", price: 129000, status: "ON_SALE", salesCount: 34 },
+      { id: 1002, name: "보조배터리 20000mAh", category: "가전디지털", price: 29000, status: "HIDDEN", salesCount: 22 },
+    ],
     issues: [
       {
         type: "HIGH_REFUND_RATE",
@@ -409,6 +449,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 19,
     },
+    products: [
+      { id: 1101, name: "북유럽 스타일 쿠션 커버", category: "생활용품", price: 15000, status: "SOLD_OUT", salesCount: 18 },
+      { id: 1102, name: "감성 LED 무드등", category: "생활용품", price: 24000, status: "SOLD_OUT", salesCount: 12 },
+    ],
     issues: [
       {
         type: "NO_RECENT_ORDER",
@@ -462,6 +506,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 1201, name: "유기농 이유식 5팩 세트", category: "생활용품", price: 26000, status: "ON_SALE", salesCount: 4 },
+      { id: 1202, name: "아기 실리콘 식기 세트", category: "생활용품", price: 18000, status: "ON_SALE", salesCount: 2 },
+    ],
     issues: [],
     review: {
       totalReviews: 2,
@@ -471,6 +519,7 @@ const MOCK_SELLERS = [
     },
   },
 ];
+// ↑↑↑ MOCK FALLBACK 끝 (MOCK_SELLERS)
 
 function loadWatchlist() {
   try {
@@ -481,11 +530,52 @@ function loadWatchlist() {
   }
 }
 
+// seller-evaluation-service(recommend-service)는 등급을 한글 문자열로,
+// 이슈 근거를 evidence 필드로 내려준다. 내부 화면 모델(GRADE_META 코드,
+// issue.detail)로 정규화한다.
+const GRADE_LABEL_TO_CODE = {
+  우수: "EXCELLENT",
+  주의: "WARNING",
+  퇴출검토: "REVIEW",
+  평가보류: "INSUFFICIENT"
+};
+
+function normalizeGrade(grade) {
+  if (!grade) return "INSUFFICIENT";
+  return GRADE_LABEL_TO_CODE[grade] || grade;
+}
+
+function normalizeIssue(issue) {
+  return {
+    type: issue.type,
+    severity: issue.severity,
+    detail: issue.evidence ?? issue.detail ?? ""
+  };
+}
+
+// 실제 API 응답은 sellerId/sellerName/grade/score/issues 정도만 내려주고
+// (metrics·review·products는 아직 없음) 화면은 이 필드가 없어도 깨지지
+// 않도록 각 뷰에서 v-if로 방어한다.
+function normalizeSeller(raw) {
+  return {
+    id: raw.sellerId ?? raw.id,
+    name: raw.sellerName ?? raw.name,
+    category: raw.category ?? null,
+    grade: normalizeGrade(raw.grade),
+    score: raw.score ?? null,
+    joinedAt: raw.joinedAt ?? null,
+    sellerStatus: raw.sellerStatus ?? "ACTIVE",
+    insufficientNote: raw.insufficientNote ?? null,
+    metrics: raw.metrics ?? null,
+    issues: Array.isArray(raw.issues) ? raw.issues.map(normalizeIssue) : [],
+    review: raw.review ?? null
+  };
+}
+
 export const useEvaluationStore = defineStore("evaluation", () => {
   const sellers = ref([]);
   const loading = ref(false);
   const error = ref(null);
-  const usingMock = ref(false);
   const watchlist = ref(loadWatchlist());
 
   function persistWatchlist() {
@@ -512,25 +602,29 @@ export const useEvaluationStore = defineStore("evaluation", () => {
       const res = await evaluationApi.getSellers();
       console.log("[EvaluationStore] getSellers response =", res.data);
 
-      const raw = Array.isArray(res.data?.data)
-        ? res.data.data
-        : Array.isArray(res.data)
-          ? res.data
-          : [];
+      // seller-evaluation-service 응답: { generatedAt, sellers: [...] }
+      const raw = Array.isArray(res.data?.sellers)
+        ? res.data.sellers
+        : Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
 
       if (raw.length) {
-        sellers.value = raw;
-        usingMock.value = false;
+        sellers.value = raw.map(normalizeSeller);
       } else {
         throw new Error("empty response");
       }
     } catch (e) {
+      // ↓↓↓ MOCK FALLBACK — /api/evaluation/sellers 연동 완료되면 이 catch 블록과
+      // 파일 상단의 MOCK_SELLERS를 통째로 지우면 된다.
       console.warn(
         "[EvaluationStore] API 미연동 또는 실패 - 목업 데이터로 대체합니다:",
         e.message,
       );
       sellers.value = MOCK_SELLERS;
-      usingMock.value = true;
+      // ↑↑↑ MOCK FALLBACK 끝
     } finally {
       loading.value = false;
     }
@@ -578,7 +672,6 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     sellers,
     loading,
     error,
-    usingMock,
     watchlist,
     isWatched,
     toggleWatch,
