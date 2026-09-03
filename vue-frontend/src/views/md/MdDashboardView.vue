@@ -399,7 +399,7 @@ onMounted(() => {
 }
 .star-btn.active,
 .star-btn:hover {
-  color: #f5a623;
+  color: var(--color-star);
 }
 .btn-sm {
   padding: 7px 14px;

@@ -353,7 +353,7 @@ onMounted(() => {
   line-height: 1;
 }
 .star-btn.active,
-.star-btn:hover { color: #f5a623; }
+.star-btn:hover { color: var(--color-star); }
 
 .col-score {
   display: flex;

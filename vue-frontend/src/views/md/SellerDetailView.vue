@@ -329,9 +329,9 @@ onMounted(async () => {
   white-space: nowrap;
 }
 .star-btn-lg.active {
-  border-color: #f5a623;
-  color: #f5a623;
-  background: #fff8ec;
+  border-color: var(--color-star);
+  color: var(--color-star);
+  background: var(--color-star-light);
 }
 
 /* 상태 확정 */
@@ -457,7 +457,7 @@ onMounted(async () => {
 }
 .metric-flag {
   border-color: var(--color-danger);
-  background: #fff8f8;
+  background: var(--color-danger-light);
 }
 .metric-label { font-size: 12px; color: var(--color-text-muted); margin-bottom: 6px; }
 .metric-value { font-size: 20px; font-weight: 700; color: var(--color-text-primary); }
