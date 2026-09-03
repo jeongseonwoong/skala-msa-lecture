@@ -10,7 +10,7 @@ const WATCHLIST_KEY = "md_watchlist_sellers";
  * 이 배열 대신 API 응답을 사용하도록 대체된다 (현재는 API 실패/빈 응답 시 폴백으로 사용).
  * 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
  */
-const MOCK_SELLERS = [
+export const MOCK_SELLERS = [
   {
     id: 1,
     name: "그린리빙",
@@ -529,6 +529,48 @@ function loadWatchlist() {
   }
 }
 
+// seller-evaluation-service(recommend-service)는 등급을 한글 문자열로,
+// 이슈 근거를 evidence 필드로 내려준다. 내부 화면 모델(GRADE_META 코드,
+// issue.detail)로 정규화한다.
+const GRADE_LABEL_TO_CODE = {
+  우수: "EXCELLENT",
+  주의: "WARNING",
+  퇴출검토: "REVIEW",
+  평가보류: "INSUFFICIENT"
+};
+
+function normalizeGrade(grade) {
+  if (!grade) return "INSUFFICIENT";
+  return GRADE_LABEL_TO_CODE[grade] || grade;
+}
+
+function normalizeIssue(issue) {
+  return {
+    type: issue.type,
+    severity: issue.severity,
+    detail: issue.evidence ?? issue.detail ?? ""
+  };
+}
+
+// 실제 API 응답은 sellerId/sellerName/grade/score/issues 정도만 내려주고
+// (metrics·review·products는 아직 없음) 화면은 이 필드가 없어도 깨지지
+// 않도록 각 뷰에서 v-if로 방어한다.
+function normalizeSeller(raw) {
+  return {
+    id: raw.sellerId ?? raw.id,
+    name: raw.sellerName ?? raw.name,
+    category: raw.category ?? null,
+    grade: normalizeGrade(raw.grade),
+    score: raw.score ?? null,
+    joinedAt: raw.joinedAt ?? null,
+    sellerStatus: raw.sellerStatus ?? "ACTIVE",
+    insufficientNote: raw.insufficientNote ?? null,
+    metrics: raw.metrics ?? null,
+    issues: Array.isArray(raw.issues) ? raw.issues.map(normalizeIssue) : [],
+    review: raw.review ?? null
+  };
+}
+
 export const useEvaluationStore = defineStore("evaluation", () => {
   const sellers = ref([]);
   const loading = ref(false);
@@ -560,14 +602,17 @@ export const useEvaluationStore = defineStore("evaluation", () => {
       const res = await evaluationApi.getSellers();
       console.log("[EvaluationStore] getSellers response =", res.data);
 
-      const raw = Array.isArray(res.data?.data)
-        ? res.data.data
-        : Array.isArray(res.data)
-          ? res.data
-          : [];
+      // seller-evaluation-service 응답: { generatedAt, sellers: [...] }
+      const raw = Array.isArray(res.data?.sellers)
+        ? res.data.sellers
+        : Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
 
       if (raw.length) {
-        sellers.value = raw;
+        sellers.value = raw.map(normalizeSeller);
         usingMock.value = false;
       } else {
         throw new Error("empty response");
@@ -610,18 +655,6 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     return counts;
   });
 
-  // 전체 셀러의 상품을 셀러 정보와 함께 평탄화 (전체 상품 목록 화면용)
-  const allProducts = computed(() =>
-    sellers.value.flatMap((s) =>
-      (s.products || []).map((p) => ({
-        ...p,
-        sellerId: s.id,
-        sellerName: s.name,
-        sellerGrade: s.grade
-      }))
-    )
-  );
-
   // MD가 오늘 확인해야 할 순서대로 정렬 (퇴출검토 > 주의 > 평가보류, 그 안에서는 점수 낮은 순)
   const priorityQueue = computed(() => {
     const rank = { REVIEW: 0, WARNING: 1, INSUFFICIENT: 2, EXCELLENT: 3 };
@@ -647,6 +680,5 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     updateSellerStatus,
     gradeCounts,
     priorityQueue,
-    allProducts,
   };
 });
