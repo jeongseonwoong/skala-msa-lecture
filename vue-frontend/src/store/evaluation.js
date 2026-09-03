@@ -4,12 +4,12 @@ import { evaluationApi } from "@/api/evaluation.js";
 
 const WATCHLIST_KEY = "md_watchlist_sellers";
 
-/**
- * 목업 셀러 평가 데이터.
- * 실제 GET /api/evaluation/sellers 응답이 연동되면 fetchSellers()에서
- * 이 배열 대신 API 응답을 사용하도록 대체된다 (현재는 API 실패/빈 응답 시 폴백으로 사용).
- * 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
- */
+// ============================================================
+// MOCK FALLBACK — dev 단계에서 UI 확인용으로만 쓰는 목업 데이터.
+// GET /api/evaluation/sellers 연동이 끝나면 이 배열 전체와, 이 배열을
+// 참조하는 store/product.js의 mockProducts()를 함께 지우면 된다.
+// 6개 이슈 규칙이 각각 최소 1건 이상 트리거되도록 설계되어 있다.
+// ============================================================
 export const MOCK_SELLERS = [
   {
     id: 1,
@@ -519,6 +519,7 @@ export const MOCK_SELLERS = [
     },
   },
 ];
+// ↑↑↑ MOCK FALLBACK 끝 (MOCK_SELLERS)
 
 function loadWatchlist() {
   try {
@@ -575,7 +576,6 @@ export const useEvaluationStore = defineStore("evaluation", () => {
   const sellers = ref([]);
   const loading = ref(false);
   const error = ref(null);
-  const usingMock = ref(false);
   const watchlist = ref(loadWatchlist());
 
   function persistWatchlist() {
@@ -613,17 +613,18 @@ export const useEvaluationStore = defineStore("evaluation", () => {
 
       if (raw.length) {
         sellers.value = raw.map(normalizeSeller);
-        usingMock.value = false;
       } else {
         throw new Error("empty response");
       }
     } catch (e) {
+      // ↓↓↓ MOCK FALLBACK — /api/evaluation/sellers 연동 완료되면 이 catch 블록과
+      // 파일 상단의 MOCK_SELLERS를 통째로 지우면 된다.
       console.warn(
         "[EvaluationStore] API 미연동 또는 실패 - 목업 데이터로 대체합니다:",
         e.message,
       );
       sellers.value = MOCK_SELLERS;
-      usingMock.value = true;
+      // ↑↑↑ MOCK FALLBACK 끝
     } finally {
       loading.value = false;
     }
@@ -671,7 +672,6 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     sellers,
     loading,
     error,
-    usingMock,
     watchlist,
     isWatched,
     toggleWatch,

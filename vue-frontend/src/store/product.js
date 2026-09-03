@@ -36,16 +36,18 @@ function normalizeProduct(course) {
   }
 }
 
+// ↓↓↓ MOCK FALLBACK — /api/courses 연동 완료되면 이 함수와 evaluation.js의
+// MOCK_SELLERS를 통째로 지우면 된다.
 function mockProducts() {
   return MOCK_SELLERS.flatMap((s) =>
     (s.products || []).map((p) => ({ ...p, sellerId: s.id, sellerName: s.name }))
   )
 }
+// ↑↑↑ MOCK FALLBACK 끝
 
 export const useProductStore = defineStore('product', () => {
   const products = ref([])
   const loading = ref(false)
-  const usingMock = ref(false)
 
   async function fetchProducts() {
     loading.value = true
@@ -63,11 +65,9 @@ export const useProductStore = defineStore('product', () => {
       if (!raw.length) throw new Error('empty response')
 
       products.value = raw.map(normalizeProduct)
-      usingMock.value = false
     } catch (e) {
       console.warn('[ProductStore] /api/courses 연동 실패 - 목업 상품으로 대체합니다:', e.message)
       products.value = mockProducts()
-      usingMock.value = true
     } finally {
       loading.value = false
     }
@@ -77,5 +77,5 @@ export const useProductStore = defineStore('product', () => {
     return products.value.filter((p) => String(p.sellerId) === String(sellerId))
   }
 
-  return { products, loading, usingMock, fetchProducts, getProductsBySeller }
+  return { products, loading, fetchProducts, getProductsBySeller }
 })
