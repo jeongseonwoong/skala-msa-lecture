@@ -67,6 +67,15 @@ public class CourseService {
     }
 
     /**
+     * 셀러(instructor_id)별 상품 목록 조회 (평가 서비스 / 주문 서비스 내부 호출용)
+     */
+    public List<CourseDto.CourseResponse> getCoursesBySeller(Long sellerId) {
+        return courseRepository.findByInstructorId(sellerId).stream()
+                .map(CourseDto.CourseResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 수강생 수 증가 (Enrollment Service 수강 활성화 시 호출)
      */
     @Transactional

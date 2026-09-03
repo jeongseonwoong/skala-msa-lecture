@@ -73,6 +73,15 @@ public class CourseController {
     }
 
     /**
+     * GET /courses/internal/seller/{sellerId} - 셀러별 상품 목록 (평가/주문 서비스 내부 호출)
+     * - 래퍼 없이 CourseResponse 리스트만 직접 반환
+     */
+    @GetMapping("/internal/seller/{sellerId}")
+    public ResponseEntity<List<CourseDto.CourseResponse>> getCoursesBySeller(@PathVariable Long sellerId) {
+        return ResponseEntity.ok(courseService.getCoursesBySeller(sellerId));
+    }
+
+    /**
      * GET /courses/internal/{id} - 강의 상세 조회 (Enrollment Service 내부 호출용)
      * - 내 수강 목록 응답 조립 시 사용
      * - 래퍼 없이 CourseResponse만 직접 반환

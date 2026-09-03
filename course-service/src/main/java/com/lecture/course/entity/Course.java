@@ -35,11 +35,11 @@ public class Course {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    // 강사 ID (users 테이블 참조 - 직접 JOIN 없이 ID만 보관)
+    // 셀러 ID (users 테이블 참조 - 직접 JOIN 없이 ID만 보관). 컬럼명은 instructor_id 유지
     @Column(nullable = false)
     private Long instructorId;
 
-    // 수강생 수 (추천 서비스 정렬 기준)
+    // 누적 판매건수 (평가 서비스 판매량 지표). 컬럼명은 enrollment_count 유지
     @Column(nullable = false)
     @Builder.Default
     private Integer enrollmentCount = 0;
@@ -57,7 +57,7 @@ public class Course {
     private LocalDateTime updatedAt;
 
     public enum Category {
-        BACKEND, FRONTEND, DEVOPS, DATA_SCIENCE, MOBILE, SECURITY, DATABASE, OTHER
+        FASHION, BEAUTY, FOOD, DIGITAL, HOME, SPORTS, BOOK, OTHER
     }
 
     public enum Status {
