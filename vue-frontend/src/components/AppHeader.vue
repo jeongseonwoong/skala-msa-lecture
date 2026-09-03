@@ -3,30 +3,16 @@
     <div class="header-inner">
       <!-- 로고 -->
       <router-link to="/" class="logo">
-        <span class="logo-mark">📡</span>
+        <span class="logo-mark"><RadarMark /></span>
         <span class="logo-text">SellerRadar</span>
       </router-link>
 
-      <!-- 네비게이션 -->
-      <nav class="nav-links" v-if="auth.isAuthenticated">
-        <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">MD 홈</router-link>
-        <router-link to="/sellers" class="nav-link" :class="{ active: $route.path.startsWith('/sellers') }">셀러 평가</router-link>
-        <router-link to="/products" class="nav-link" :class="{ active: $route.path === '/products' }">전체 상품</router-link>
-        <router-link to="/watchlist" class="nav-link" :class="{ active: $route.path === '/watchlist' }">관심 셀러</router-link>
-      </nav>
-
       <!-- 우측 액션 -->
       <div class="header-actions">
-        <template v-if="auth.isAuthenticated">
-          <router-link to="/mypage" class="user-avatar" :title="auth.user?.name">
-            {{ auth.user?.name?.charAt(0) || '?' }}
-          </router-link>
-          <button class="btn btn-ghost btn-sm" @click="handleLogout">로그아웃</button>
-        </template>
-        <template v-else>
-          <router-link to="/login" class="btn btn-ghost btn-sm">로그인</router-link>
-          <router-link to="/login" class="btn btn-primary btn-sm">시작하기</router-link>
-        </template>
+        <router-link to="/mypage" class="user-chip" :class="{ active: $route.path === '/mypage' }">
+          <span class="user-avatar">{{ auth.user?.name?.charAt(0) || '?' }}</span>
+          <span class="user-name">{{ auth.user?.name || 'MD' }}</span>
+        </router-link>
       </div>
     </div>
   </header>
@@ -34,15 +20,9 @@
 
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
-import { useRouter } from 'vue-router'
+import RadarMark from '@/components/RadarMark.vue'
 
 const auth = useAuthStore()
-const router = useRouter()
-
-function handleLogout() {
-  auth.logout()
-  router.push('/')
-}
 </script>
 
 <style scoped>
@@ -50,58 +30,38 @@ function handleLogout() {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
 }
 .header-inner {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 64px;
+  height: 60px;
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   flex-shrink: 0;
 }
 .logo-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 8px;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  color: #fff;
 }
 .logo-text {
-  font-size: 17px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--color-text-primary);
-  letter-spacing: -0.3px;
-}
-.nav-links {
-  display: flex;
-  gap: 4px;
-  flex: 1;
-}
-.nav-link {
-  padding: 6px 14px;
-  border-radius: var(--radius-md);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  transition: var(--transition);
-}
-.nav-link:hover,
-.nav-link.active {
-  color: var(--color-primary);
-  background: var(--color-primary-light);
+  letter-spacing: -0.4px;
 }
 .header-actions {
   display: flex;
@@ -109,26 +69,34 @@ function handleLogout() {
   gap: 8px;
   margin-left: auto;
 }
-.btn-sm {
-  padding: 7px 16px;
-  font-size: 13px;
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 999px;
+  transition: var(--transition);
+}
+.user-chip:hover,
+.user-chip.active {
+  background: var(--color-bg-tertiary);
 }
 .user-avatar {
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--color-primary-light);
   color: var(--color-primary);
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: var(--transition);
+  flex-shrink: 0;
 }
-.user-avatar:hover {
-  background: var(--color-primary);
-  color: #fff;
+.user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 </style>
