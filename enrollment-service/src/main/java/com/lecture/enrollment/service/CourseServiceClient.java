@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -88,6 +89,17 @@ public class CourseServiceClient {
                     courseId, e.getMessage());
             throw new RuntimeException("Course Service 강의 상세 조회 실패");
         }
+    }
+
+    /**
+     * Course Service: 상품 가격 조회 (주문 생성 시 결제 금액으로 사용)
+     */
+    public BigDecimal getCoursePrice(Long courseId) {
+        Object price = getCourse(courseId).get("price");
+        if (price == null) {
+            throw new RuntimeException("Course Service 응답에 price가 없습니다 - courseId: " + courseId);
+        }
+        return new BigDecimal(price.toString());
     }
 
     /**

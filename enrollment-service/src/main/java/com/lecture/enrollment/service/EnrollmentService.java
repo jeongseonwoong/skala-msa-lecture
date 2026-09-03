@@ -41,9 +41,11 @@ public class EnrollmentService {
 
         // 한 구매자가 같은 상품을 여러 번 주문할 수 있으므로 중복 주문 검사를 하지 않는다
 
+        BigDecimal price = courseServiceClient.getCoursePrice(courseId);
+
         Enrollment enrollment = enrollmentWriteService.createPendingEnrollment(userId, courseId);
 
-        paymentServiceClient.requestPayment(userId, courseId, BigDecimal.valueOf(99000));
+        paymentServiceClient.requestPayment(userId, courseId, price);
 
         log.info("[EnrollmentService] 수강신청 완료 (결제 대기) - enrollmentId: {}", enrollment.getId());
         return EnrollmentDto.EnrollmentResponse.from(enrollment);
