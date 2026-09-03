@@ -15,7 +15,7 @@
               <strong>{{ priorityCount }}곳</strong>입니다.
             </p>
           </div>
-          <router-link to="/md/sellers" class="btn btn-outline"
+          <router-link to="/sellers" class="btn btn-outline"
             >전체 랭킹 보기</router-link
           >
         </div>
@@ -89,7 +89,7 @@
                 <div>
                   <div class="pc-name-row">
                     <router-link
-                      :to="`/md/sellers/${seller.id}`"
+                      :to="`/sellers/${seller.id}`"
                       class="pc-name"
                       >{{ seller.name }}</router-link
                     >
@@ -131,7 +131,7 @@
                   {{ evaluationStore.isWatched(seller.id) ? "★" : "☆" }}
                 </button>
                 <router-link
-                  :to="`/md/sellers/${seller.id}`"
+                  :to="`/sellers/${seller.id}`"
                   class="btn btn-primary btn-sm"
                   >상세 확인</router-link
                 >

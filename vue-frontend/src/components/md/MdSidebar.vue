@@ -3,19 +3,23 @@
     <div class="sidebar-section">
       <div class="sidebar-label">이슈 관리</div>
 
-      <router-link to="/md" class="sidebar-item" :class="{ active: $route.path === '/md' }">
+      <router-link to="/" class="sidebar-item" :class="{ active: $route.path === '/' }">
         <span class="si-icon">🏠</span> MD 홈
       </router-link>
 
       <router-link
-        to="/md/sellers"
+        to="/sellers"
         class="sidebar-item"
-        :class="{ active: $route.path.startsWith('/md/sellers') }"
+        :class="{ active: $route.path.startsWith('/sellers') }"
       >
         <span class="si-icon">📊</span> 셀러 평가 랭킹
       </router-link>
 
-      <router-link to="/md/watchlist" class="sidebar-item" :class="{ active: $route.path === '/md/watchlist' }">
+      <router-link to="/products" class="sidebar-item" :class="{ active: $route.path === '/products' }">
+        <span class="si-icon">🛒</span> 전체 상품
+      </router-link>
+
+      <router-link to="/watchlist" class="sidebar-item" :class="{ active: $route.path === '/watchlist' }">
         <span class="si-icon">⭐</span> 관심 셀러
         <span v-if="watchCount" class="sidebar-count">{{ watchCount }}</span>
       </router-link>

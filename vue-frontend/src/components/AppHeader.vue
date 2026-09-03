@@ -9,9 +9,10 @@
 
       <!-- 네비게이션 -->
       <nav class="nav-links" v-if="auth.isAuthenticated">
-        <router-link to="/md" class="nav-link" :class="{ active: $route.path === '/md' }">MD 홈</router-link>
-        <router-link to="/md/sellers" class="nav-link" :class="{ active: $route.path.startsWith('/md/sellers') }">셀러 평가</router-link>
-        <router-link to="/md/watchlist" class="nav-link" :class="{ active: $route.path === '/md/watchlist' }">관심 셀러</router-link>
+        <router-link to="/" class="nav-link" :class="{ active: $route.path === '/' }">MD 홈</router-link>
+        <router-link to="/sellers" class="nav-link" :class="{ active: $route.path.startsWith('/sellers') }">셀러 평가</router-link>
+        <router-link to="/products" class="nav-link" :class="{ active: $route.path === '/products' }">전체 상품</router-link>
+        <router-link to="/watchlist" class="nav-link" :class="{ active: $route.path === '/watchlist' }">관심 셀러</router-link>
       </nav>
 
       <!-- 우측 액션 -->

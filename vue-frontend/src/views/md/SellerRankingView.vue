@@ -105,7 +105,7 @@
             </div>
 
             <div class="col-action">
-              <router-link :to="`/md/sellers/${seller.id}`" class="btn btn-ghost btn-sm">상세보기</router-link>
+              <router-link :to="`/sellers/${seller.id}`" class="btn btn-ghost btn-sm">상세보기</router-link>
             </div>
           </div>
         </div>
