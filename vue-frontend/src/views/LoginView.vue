@@ -1,17 +1,19 @@
 <template>
   <div class="entry-page">
-    <!-- 상단 로고 바 -->
-    <header class="entry-header">
-      <div class="entry-header-inner">
-        <span class="logo-mark">📡</span>
-        <span class="logo-text">SellerRadar</span>
-      </div>
-    </header>
+    <!-- 진입 섹션: 브랜드 패널 + 로그인 카드 -->
+    <section class="entry-hero">
+      <!-- 좌측 브랜드 패널 -->
+      <div class="brand-panel">
+        <div class="brand-radar" aria-hidden="true">
+          <RadarMark />
+        </div>
 
-    <!-- 히어로: 마케팅 소개 + 로그인/회원가입 -->
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-content fade-in-up">
+        <div class="brand-top">
+          <span class="logo-mark"><RadarMark /></span>
+          <span class="logo-text">SellerRadar</span>
+        </div>
+
+        <div class="brand-content fade-in-up">
           <span class="hero-badge">MD를 위한 AI 셀러 운영 관리</span>
           <h1 class="hero-title">오늘 확인해야 할 셀러,<br>SellerRadar가 먼저 찾아드립니다</h1>
           <p class="hero-desc">
@@ -27,14 +29,23 @@
             <div class="stat"><span class="stat-num">AI</span><span class="stat-label">리뷰·CS 감성 분석</span></div>
           </div>
         </div>
+      </div>
 
-        <!-- 로그인 / 회원가입 카드 -->
+      <!-- 우측 로그인 카드 -->
+      <div class="auth-panel">
         <div class="auth-card fade-in">
           <!-- 로그인 -->
           <div v-if="!showRegister" class="section">
-            <h3 class="section-title">로그인</h3>
-            <p class="section-desc">SellerRadar MD 계정으로 로그인합니다.</p>
-            <button class="btn btn-primary btn-full" @click="handleOAuth">로그인</button>
+            <span class="auth-icon"><RadarMark /></span>
+            <h3 class="section-title">MD 로그인</h3>
+            <p class="section-desc">SellerRadar 계정으로 로그인하고 오늘의 이슈를 확인하세요.</p>
+
+            <button class="btn btn-primary btn-full" @click="handleOAuth">
+              SellerRadar로 로그인 <span class="btn-arrow">→</span>
+            </button>
+
+            <p class="auth-scope-note">MD 계정으로만 가입·이용할 수 있습니다.</p>
+
             <div class="switch-link">
               계정이 없으신가요?
               <button class="text-btn" @click="showRegister = true">회원가입</button>
@@ -43,7 +54,10 @@
 
           <!-- 회원가입 -->
           <div v-else class="section">
-            <h3 class="section-title">회원가입</h3>
+            <span class="auth-icon"><RadarMark /></span>
+            <h3 class="section-title">MD 회원가입</h3>
+            <p class="section-desc">기본 정보를 입력하고 SellerRadar를 시작하세요.</p>
+
             <form @submit.prevent="handleRegister" class="form">
               <div class="form-group">
                 <label class="form-label">이름</label>
@@ -116,7 +130,7 @@
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-logo">
-          <span class="footer-mark">📡</span>
+          <span class="footer-mark"><RadarMark /></span>
           <span>SellerRadar</span>
         </div>
         <p class="footer-copy">© 2026 SellerRadar. All rights reserved.</p>
@@ -131,6 +145,7 @@ import { useAuthStore } from '@/store/auth.js'
 import { authApi } from '@/api/auth.js'
 import GradeBadge from '@/components/md/GradeBadge.vue'
 import IssueTag from '@/components/md/IssueTag.vue'
+import RadarMark from '@/components/RadarMark.vue'
 
 const auth = useAuthStore()
 
@@ -199,97 +214,121 @@ async function handleRegister() {
 </script>
 
 <style scoped>
-.entry-page { background: var(--color-bg-secondary); }
+.entry-page { background: var(--color-bg-primary); }
 
-/* 상단 로고 바 */
-.entry-header {
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg-primary);
+/* 진입 섹션 (브랜드 패널 + 로그인 카드) */
+.entry-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  min-height: 100vh;
 }
-.entry-header-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
+
+/* 좌측 브랜드 패널 (다크 chrome과 동일 계열) */
+.brand-panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(160deg, #0F172A 0%, #1E1B4B 55%, #312E81 100%);
+  padding: 40px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+}
+.brand-radar {
+  position: absolute;
+  top: 50%;
+  right: -160px;
+  transform: translateY(-50%);
+  width: 520px;
+  height: 520px;
+  color: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+.brand-top {
+  position: absolute;
+  top: 40px;
+  left: 56px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
 }
 .logo-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
 }
-.logo-text { font-size: 17px; font-weight: 700; color: var(--color-text-primary); letter-spacing: -0.3px; }
+.logo-text { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
 
-/* 히어로 */
-.hero {
-  background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 50%, #f0f9ff 100%);
-  border-bottom: 1px solid var(--color-border);
-  padding: 56px 0 64px;
-}
-.hero-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 48px;
-  align-items: start;
-}
+.brand-content { max-width: 480px; position: relative; }
 .hero-badge {
   display: inline-block;
   padding: 5px 14px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  background: rgba(99,102,241,0.2);
+  color: #C7D2FE;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .hero-title {
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1.3;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.35;
   letter-spacing: -0.5px;
-  color: var(--color-text-primary);
+  color: #fff;
   margin-bottom: 14px;
 }
 .hero-desc {
-  font-size: 15px;
-  color: var(--color-text-secondary);
+  font-size: 14.5px;
+  color: rgba(255,255,255,0.65);
   line-height: 1.7;
-  max-width: 460px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
-.feature-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--color-text-secondary); }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-primary); flex-shrink: 0; }
+.feature-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+.feature-list li { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: rgba(255,255,255,0.8); }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #818CF8; flex-shrink: 0; }
 .hero-stats { display: flex; gap: 32px; }
 .stat { display: flex; flex-direction: column; gap: 2px; }
-.stat-num { font-size: 20px; font-weight: 700; color: var(--color-primary); }
-.stat-label { font-size: 12px; color: var(--color-text-secondary); }
+.stat-num { font-size: 19px; font-weight: 800; color: #fff; }
+.stat-label { font-size: 11.5px; color: rgba(255,255,255,0.55); }
 
-/* 로그인 / 회원가입 카드 */
-.auth-card {
+/* 우측 로그인 카드 */
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
   background: var(--color-bg-primary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 32px;
 }
-.section { display: flex; flex-direction: column; gap: 16px; }
-.section-title { font-size: 20px; font-weight: 700; color: var(--color-text-primary); margin-bottom: 4px; }
-.section-desc { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.auth-card { width: 100%; max-width: 380px; }
+.section { display: flex; flex-direction: column; gap: 14px; }
+.auth-icon {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+.section-title { font-size: 22px; font-weight: 800; color: var(--color-text-primary); letter-spacing: -0.3px; }
+.section-desc { font-size: 13.5px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 6px; }
 
-.form { display: flex; flex-direction: column; gap: 14px; }
+.btn-arrow { transition: transform 0.16s ease; }
+.btn-full:hover .btn-arrow { transform: translateX(2px); }
+
+.auth-scope-note {
+  text-align: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.form { display: flex; flex-direction: column; gap: 14px; margin-top: 2px; }
 .form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); }
+.form-label { font-size: 13px; font-weight: 600; color: var(--color-text-secondary); }
 .form-input {
   padding: 10px 14px;
   border: 1.5px solid var(--color-border);
@@ -302,7 +341,7 @@ async function handleRegister() {
   outline: none;
 }
 .form-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
-.btn-full { width: 100%; padding: 12px; font-size: 15px; justify-content: center; margin-top: 4px; }
+.btn-full { width: 100%; padding: 12px; font-size: 14.5px; justify-content: center; margin-top: 4px; }
 
 .switch-link {
   text-align: center;
@@ -315,39 +354,39 @@ async function handleRegister() {
   border: none;
   color: var(--color-primary);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   padding: 0 2px;
-  text-decoration: underline;
 }
+.text-btn:hover { text-decoration: underline; }
 .error-msg {
   padding: 10px 14px;
-  background: #fef2f2;
-  border: 1px solid #fecaca;
+  background: var(--color-danger-light);
+  border: 1px solid #FECACA;
   border-radius: var(--radius-md);
   font-size: 13px;
-  color: #dc2626;
+  color: var(--color-danger);
 }
 .success-msg {
   padding: 10px 14px;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  background: var(--color-success-light);
+  border: 1px solid #BBF7D0;
   border-radius: var(--radius-md);
   font-size: 13px;
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 /* 공통 섹션 */
 .section-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.section-title-lg { font-size: 22px; font-weight: 700; color: var(--color-text-primary); }
+.section-title-lg { font-size: 22px; font-weight: 800; color: var(--color-text-primary); letter-spacing: -0.3px; }
 .section-title-lg.center { text-align: center; margin-bottom: 32px; }
 
 /* 미리보기 */
-.preview-section { padding: 64px 0; background: var(--color-bg-primary); }
+.preview-section { padding: 72px 0; background: var(--color-bg-secondary); }
 .preview-card {
   max-width: 420px;
   margin: 0 auto;
-  background: var(--color-bg-secondary);
+  background: var(--color-bg-primary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -393,23 +432,23 @@ async function handleRegister() {
 .preview-issues { display: flex; gap: 4px; flex-wrap: wrap; }
 
 /* 특징 */
-.features-section { padding: 64px 0; }
+.features-section { padding: 72px 0; background: var(--color-bg-primary); }
 .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .feature-card {
   padding: 28px 24px;
-  background: var(--color-bg-primary);
+  background: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   text-align: center;
   transition: var(--transition);
 }
 .feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.feature-icon { font-size: 32px; margin-bottom: 12px; }
-.feature-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-.feature-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.feature-icon { font-size: 30px; margin-bottom: 12px; }
+.feature-title { font-size: 14.5px; font-weight: 700; margin-bottom: 8px; }
+.feature-desc { font-size: 12.5px; color: var(--color-text-secondary); line-height: 1.6; }
 
 /* 푸터 */
-.footer { background: var(--color-text-primary); padding: 32px 0; }
+.footer { background: var(--color-chrome-bg); padding: 32px 0; }
 .footer-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -418,25 +457,25 @@ async function handleRegister() {
   align-items: center;
   justify-content: space-between;
 }
-.footer-logo { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 15px; font-weight: 600; }
+.footer-logo { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 14px; font-weight: 700; }
 .footer-mark {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
   border-radius: 6px;
-  background: rgba(255,255,255,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
 }
-.footer-copy { font-size: 13px; color: rgba(255,255,255,0.5); }
+.footer-copy { font-size: 12.5px; color: rgba(255,255,255,0.45); }
 
 @media (max-width: 992px) {
-  .hero-inner { grid-template-columns: 1fr; }
+  .entry-hero { grid-template-columns: 1fr; min-height: 0; }
+  .brand-panel { padding: 88px 32px 48px; }
+  .brand-radar { display: none; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 640px) {
-  .hero-title { font-size: 28px; }
+  .hero-title { font-size: 26px; }
   .features-grid { grid-template-columns: 1fr; }
   .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
 }
