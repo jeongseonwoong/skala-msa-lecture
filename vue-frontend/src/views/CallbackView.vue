@@ -8,52 +8,52 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/store/auth.js'
+import { onMounted, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/store/auth.js";
 
-const router = useRouter()
-const route = useRoute()
-const auth = useAuthStore()
+const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
 
-const message = ref('로그인 처리 중...')
-const processing = ref(false)
+const message = ref("로그인 처리 중...");
+const processing = ref(false);
 
 onMounted(async () => {
-  if (processing.value) return
-  processing.value = true
+  if (processing.value) return;
+  processing.value = true;
 
-  const code = route.query.code
-  const error = route.query.error
-  const errorDescription = route.query.error_description
+  const code = route.query.code;
+  const error = route.query.error;
+  const errorDescription = route.query.error_description;
 
   if (error) {
-    console.error('OAuth callback error:', {
+    console.error("OAuth callback error:", {
       error,
-      errorDescription
-    })
-    message.value = '로그인에 실패했습니다. 다시 시도해주세요.'
-    router.replace('/login')
-    return
+      errorDescription,
+    });
+    message.value = "로그인에 실패했습니다. 다시 시도해주세요.";
+    router.replace("/login");
+    return;
   }
 
   if (!code) {
-    console.error('OAuth callback error: code 파라미터가 없습니다.')
-    message.value = '잘못된 로그인 요청입니다.'
-    router.replace('/login')
-    return
+    console.error("OAuth callback error: code 파라미터가 없습니다.");
+    message.value = "잘못된 로그인 요청입니다.";
+    router.replace("/login");
+    return;
   }
 
   try {
-    await auth.handleCallback(code)
-    message.value = '로그인 완료! 이동 중입니다...'
-    router.replace('/courses')
+    await auth.handleCallback(code);
+    message.value = "로그인 완료! 이동 중입니다...";
+    router.replace("/md");
   } catch (err) {
-    console.error('OAuth callback 처리 실패:', err)
-    message.value = '로그인 처리에 실패했습니다.'
-    router.replace('/login')
+    console.error("OAuth callback 처리 실패:", err);
+    message.value = "로그인 처리에 실패했습니다.";
+    router.replace("/login");
   }
-})
+});
 </script>
 
 <style scoped>

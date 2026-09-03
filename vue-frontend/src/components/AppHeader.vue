@@ -3,14 +3,15 @@
     <div class="header-inner">
       <!-- 로고 -->
       <router-link to="/" class="logo">
-        <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" class="logo-img" />
-        <span class="logo-text">LearnNexus</span>
+        <span class="logo-mark">📡</span>
+        <span class="logo-text">SellerRadar</span>
       </router-link>
 
       <!-- 네비게이션 -->
       <nav class="nav-links" v-if="auth.isAuthenticated">
-        <router-link to="/courses" class="nav-link" :class="{ active: $route.path.startsWith('/courses') }">강의</router-link>
-        <router-link to="/enrollments" class="nav-link" :class="{ active: $route.path === '/enrollments' }">내 학습</router-link>
+        <router-link to="/md" class="nav-link" :class="{ active: $route.path === '/md' }">MD 홈</router-link>
+        <router-link to="/md/sellers" class="nav-link" :class="{ active: $route.path.startsWith('/md/sellers') }">셀러 평가</router-link>
+        <router-link to="/md/watchlist" class="nav-link" :class="{ active: $route.path === '/md/watchlist' }">관심 셀러</router-link>
       </nav>
 
       <!-- 우측 액션 -->
@@ -67,11 +68,15 @@ function handleLogout() {
   gap: 10px;
   flex-shrink: 0;
 }
-.logo-img {
+.logo-mark {
   width: 36px;
   height: 36px;
-  object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
 }
 .logo-text {
   font-size: 17px;

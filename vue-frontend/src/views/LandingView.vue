@@ -6,43 +6,37 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-content fade-in-up">
-          <span class="hero-badge">MSA 기반 교육 플랫폼</span>
-          <h1 class="hero-title">배움을 더 스마트하게,<br>커리어를 더 빠르게</h1>
-          <p class="hero-desc">개발, 디자인, 비즈니스 분야의 전문가 강의를 수강하고 실력을 키워보세요.</p>
+          <span class="hero-badge">MD를 위한 AI 셀러 운영 관리</span>
+          <h1 class="hero-title">오늘 확인해야 할 셀러,<br>SellerRadar가 먼저 찾아드립니다</h1>
+          <p class="hero-desc">
+            판매·취소·환불 데이터를 규칙 기반으로 자동 채점하고, 리뷰·CS는 AI가 감성 분석해
+            우선순위와 근거까지 함께 제시합니다.
+          </p>
           <div class="hero-actions">
-            <router-link to="/login" class="btn btn-primary btn-lg">무료로 시작하기</router-link>
-            <router-link to="/courses" class="btn btn-outline btn-lg">강의 둘러보기</router-link>
+            <router-link to="/login" class="btn btn-primary btn-lg">MD로 시작하기</router-link>
           </div>
           <div class="hero-stats">
-            <div class="stat"><span class="stat-num">1,200+</span><span class="stat-label">강의</span></div>
-            <div class="stat"><span class="stat-num">340+</span><span class="stat-label">강사</span></div>
-            <div class="stat"><span class="stat-num">28,000+</span><span class="stat-label">수강생</span></div>
+            <div class="stat"><span class="stat-num">6개</span><span class="stat-label">자동 이슈 탐지 규칙</span></div>
+            <div class="stat"><span class="stat-num">3단계</span><span class="stat-label">셀러 등급 분류</span></div>
+            <div class="stat"><span class="stat-num">AI</span><span class="stat-label">리뷰·CS 감성 분석</span></div>
           </div>
         </div>
-        <div class="hero-visual fade-in">
-          <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" class="hero-logo" />
-        </div>
-      </div>
-    </section>
 
-    <!-- 인기 강의 -->
-    <section class="popular-section">
-      <div class="section-inner">
-        <div class="section-header">
-          <h2 class="section-title">인기 강의</h2>
-          <router-link to="/login" class="section-link">전체 보기 →</router-link>
-        </div>
-        <div class="course-grid">
-          <div v-for="course in featuredCourses" :key="course.id" class="course-card-landing">
-            <div class="card-thumb" :class="course.thumbBg">
-              <img :src="course.thumbSrc" :alt="course.title" class="thumb-img" />
-            </div>
-            <div class="card-body">
-              <span class="badge" :class="course.badgeClass">{{ course.category }}</span>
-              <h3 class="card-title">{{ course.title }}</h3>
-              <div class="card-meta">
-                <span class="instructor">{{ course.instructor }}</span>
-                <span class="price">{{ course.price }}</span>
+        <!-- 제품 미리보기 카드 -->
+        <div class="hero-preview fade-in">
+          <div class="preview-header">
+            <span class="preview-title">오늘 체크해야 할 셀러</span>
+            <span class="preview-badge">3곳</span>
+          </div>
+          <div v-for="item in previewSellers" :key="item.name" class="preview-row">
+            <div class="preview-avatar" :class="`avatar-${item.grade.toLowerCase()}`">{{ item.name.charAt(0) }}</div>
+            <div class="preview-info">
+              <div class="preview-name-row">
+                <span class="preview-name">{{ item.name }}</span>
+                <GradeBadge :grade="item.grade" />
+              </div>
+              <div class="preview-issues">
+                <IssueTag v-for="issue in item.issues" :key="issue.type" :issue="issue" />
               </div>
             </div>
           </div>
@@ -53,7 +47,7 @@
     <!-- 특징 섹션 -->
     <section class="features-section">
       <div class="section-inner">
-        <h2 class="section-title center">왜 LearnNexus인가요?</h2>
+        <h2 class="section-title center">SellerRadar는 이렇게 동작합니다</h2>
         <div class="features-grid">
           <div v-for="f in features" :key="f.title" class="feature-card">
             <div class="feature-icon">{{ f.icon }}</div>
@@ -67,9 +61,9 @@
     <!-- CTA -->
     <section class="cta-section">
       <div class="cta-inner">
-        <h2>지금 바로 시작하세요</h2>
-        <p>수천 명의 개발자들이 LearnNexus와 함께 성장하고 있습니다.</p>
-        <router-link to="/login" class="btn btn-primary btn-lg">무료로 시작하기</router-link>
+        <h2>지금 바로 확인해보세요</h2>
+        <p>MD 계정으로 로그인하면 전체 셀러 랭킹과 오늘의 이슈를 바로 볼 수 있습니다.</p>
+        <router-link to="/login" class="btn btn-primary btn-lg">MD로 시작하기</router-link>
       </div>
     </section>
 
@@ -77,10 +71,10 @@
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-logo">
-          <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" />
-          <span>LearnNexus</span>
+          <span class="footer-mark">📡</span>
+          <span>SellerRadar</span>
         </div>
-        <p class="footer-copy">© 2026 LearnNexus. All rights reserved.</p>
+        <p class="footer-copy">© 2026 SellerRadar. All rights reserved.</p>
       </div>
     </footer>
   </div>
@@ -88,28 +82,40 @@
 
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
+import GradeBadge from '@/components/md/GradeBadge.vue'
+import IssueTag from '@/components/md/IssueTag.vue'
 
-import springImg   from '@/assets/images/courses/spring_boot.png'
-import vueImg      from '@/assets/images/courses/vue_js.png'
-import k8sImg      from '@/assets/images/courses/kubernetes.png'
-import dockerImg   from '@/assets/images/courses/docker.png'
-import pythonImg   from '@/assets/images/courses/python.png'
-import genaiImg    from '@/assets/images/courses/generative_ai.png'
-
-const featuredCourses = [
-  { id:1, title:'Spring Boot MSA 완성', category:'백엔드',    instructor:'김강사', price:'₩89,000', thumbSrc: springImg, thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:2, title:'Vue 3 실전 프로젝트',  category:'프론트엔드', instructor:'이강사', price:'₩69,000', thumbSrc: vueImg,    thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:3, title:'Kubernetes 운영 가이드',category:'DevOps',   instructor:'박강사', price:'₩99,000', thumbSrc: k8sImg,    thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:4, title:'Docker 컨테이너 실전', category:'DevOps',    instructor:'정강사', price:'₩79,000', thumbSrc: dockerImg, thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:5, title:'Python 데이터 분석',   category:'데이터',    instructor:'최강사', price:'₩59,000', thumbSrc: pythonImg, thumbBg:'thumb-purple', badgeClass:'badge-purple' },
-  { id:6, title:'Generative AI 실전',   category:'AI',        instructor:'한강사', price:'₩75,000', thumbSrc: genaiImg,  thumbBg:'thumb-pink',   badgeClass:'badge-pink'   },
+const previewSellers = [
+  {
+    name: '홈스타일마켓',
+    grade: 'REVIEW',
+    issues: [
+      { type: 'NO_RECENT_ORDER', severity: 0.7 },
+      { type: 'LOW_REVENUE', severity: 0.67 }
+    ]
+  },
+  {
+    name: '빈티지클로젯',
+    grade: 'REVIEW',
+    issues: [
+      { type: 'HIGH_CANCEL_RATE', severity: 0.85 },
+      { type: 'HIGH_REFUND_RATE', severity: 0.75 }
+    ]
+  },
+  {
+    name: '루미코스메틱',
+    grade: 'WARNING',
+    issues: [
+      { type: 'HIGH_REFUND_RATE', severity: 0.55 }
+    ]
+  }
 ]
 
 const features = [
-  { icon:'🚀', title:'실무 중심 커리큘럼', desc:'현업 전문가가 직접 설계한 실무 중심 강의로 빠르게 성장하세요.' },
-  { icon:'🎯', title:'맞춤 강의 추천', desc:'AI 기반 추천 시스템이 수강 이력을 분석해 딱 맞는 강의를 추천합니다.' },
-  { icon:'💳', title:'간편한 수강 신청', desc:'원클릭 결제와 즉시 수강으로 학습을 바로 시작하세요.' },
-  { icon:'📱', title:'언제 어디서나', desc:'PC, 태블릿, 모바일 어디서든 끊김 없이 학습하세요.' },
+  { icon: '🧮', title: '규칙 기반 자동 채점', desc: '판매량·취소율·환불율·매출을 6개 조건 규칙으로 자동 검사해 이슈를 태깅합니다.' },
+  { icon: '🤖', title: 'AI 리뷰·CS 감성 분석', desc: '리뷰 문맥을 분석해 가품 의심, CS 불친절 등 부정 언급 급증을 조기에 포착합니다.' },
+  { icon: '📊', title: '우선순위 랭킹', desc: '퇴출검토 → 주의 순으로 정렬된 랭킹과 근거를 한 화면에서 확인합니다.' },
+  { icon: '⭐', title: '관심 셀러 모니터링', desc: '밀착 추적이 필요한 셀러를 직접 등록해 지속적으로 관찰할 수 있습니다.' }
 ]
 </script>
 
@@ -142,9 +148,9 @@ const features = [
   margin-bottom: 16px;
 }
 .hero-title {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: -0.5px;
   color: var(--color-text-primary);
   margin-bottom: 16px;
@@ -169,69 +175,67 @@ const features = [
 .stat { display: flex; flex-direction: column; gap: 2px; }
 .stat-num { font-size: 22px; font-weight: 700; color: var(--color-primary); }
 .stat-label { font-size: 12px; color: var(--color-text-secondary); }
-.hero-visual {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hero-logo {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  border-radius: 24px;
-  box-shadow: var(--shadow-lg);
-}
 
-/* 강의 섹션 */
-.popular-section { padding: 64px 0; }
-.section-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-.section-title { font-size: 22px; font-weight: 700; color: var(--color-text-primary); }
-.section-title.center { text-align: center; margin-bottom: 40px; }
-.section-link { font-size: 14px; color: var(--color-primary); font-weight: 500; }
-.section-link:hover { text-decoration: underline; }
-
-.course-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.course-card-landing {
+/* 제품 미리보기 */
+.hero-preview {
+  width: 380px;
   background: var(--color-bg-primary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: var(--transition);
+  box-shadow: var(--shadow-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.course-card-landing:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
 }
-.card-thumb {
-  height: 110px;
+.preview-title { font-size: 13px; font-weight: 700; color: var(--color-text-primary); }
+.preview-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.preview-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+}
+.preview-row:hover { background: var(--color-bg-secondary); }
+.preview-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
-.thumb-teal   { background: #E1F5EE; }
-.thumb-blue   { background: #E6F1FB; }
-.thumb-purple { background: #EEEDFE; }
-.thumb-pink   { background: #FBEAF0; }
-.thumb-img { width: 100%; height: 100%; object-fit: contain; padding: 14px; }
-.card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
-.card-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); line-height: 1.4; }
-.card-meta { display: flex; justify-content: space-between; align-items: center; }
-.instructor { font-size: 12px; color: var(--color-text-secondary); }
-.price { font-size: 14px; font-weight: 600; color: var(--color-primary); }
+.avatar-review { background: var(--color-danger-light); color: var(--color-danger); }
+.avatar-warning { background: var(--color-warning-light); color: var(--color-warning); }
+.preview-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.preview-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.preview-name { font-size: 13px; font-weight: 600; color: var(--color-text-primary); }
+.preview-issues { display: flex; gap: 4px; flex-wrap: wrap; }
 
 /* 특징 */
 .features-section { padding: 64px 0; background: var(--color-bg-primary); }
+.section-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.section-title { font-size: 22px; font-weight: 700; color: var(--color-text-primary); }
+.section-title.center { text-align: center; margin-bottom: 40px; }
 .features-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -288,6 +292,26 @@ const features = [
   font-size: 15px;
   font-weight: 600;
 }
-.footer-logo img { width: 28px; height: 28px; border-radius: 6px; }
+.footer-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
 .footer-copy { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+@media (max-width: 992px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero-preview { width: 100%; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .hero-title { font-size: 30px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+}
 </style>
