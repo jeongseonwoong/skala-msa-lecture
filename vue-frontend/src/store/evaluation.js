@@ -30,6 +30,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 101, name: "천연 소재 러그 매트", category: "생활용품", price: 39000, status: "ON_SALE", salesCount: 312 },
+      { id: 102, name: "다용도 수납정리함 세트", category: "생활용품", price: 22000, status: "ON_SALE", salesCount: 228 },
+    ],
     issues: [],
     review: {
       totalReviews: 214,
@@ -60,6 +64,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 201, name: "제철 과일 정기 박스", category: "식품", price: 32000, status: "ON_SALE", salesCount: 401 },
+      { id: 202, name: "냉동 손만두 10팩", category: "식품", price: 18500, status: "ON_SALE", salesCount: 356 },
+    ],
     issues: [],
     review: {
       totalReviews: 305,
@@ -87,6 +95,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 301, name: "실리콘 주방용품 6종 세트", category: "식품", price: 27000, status: "ON_SALE", salesCount: 189 },
+      { id: 302, name: "논스틱 인덕션 프라이팬", category: "식품", price: 45000, status: "ON_SALE", salesCount: 111 },
+    ],
     issues: [
       {
         type: "SALES_DECLINING",
@@ -120,6 +132,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 401, name: "수분 진정 크림 50ml", category: "뷰티", price: 28000, status: "ON_SALE", salesCount: 142 },
+      { id: 402, name: "매트 립틴트 3종 세트", category: "뷰티", price: 21000, status: "HIDDEN", salesCount: 68 },
+    ],
     issues: [
       {
         type: "HIGH_REFUND_RATE",
@@ -156,6 +172,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 5000000,
       daysSinceLastOrder: 2,
     },
+    products: [
+      { id: 501, name: "무선 스틱 청소기", category: "가전디지털", price: 189000, status: "ON_SALE", salesCount: 96 },
+      { id: 502, name: "블루투스 이어폰", category: "가전디지털", price: 59000, status: "ON_SALE", salesCount: 79 },
+    ],
     issues: [
       {
         type: "HIGH_CANCEL_RATE",
@@ -192,6 +212,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 3,
     },
+    products: [
+      { id: 601, name: "프리미엄 요가매트", category: "스포츠", price: 34000, status: "ON_SALE", salesCount: 58 },
+      { id: 602, name: "쿠셔닝 런닝화", category: "스포츠", price: 79000, status: "ON_SALE", salesCount: 37 },
+    ],
     issues: [
       {
         type: "LOW_SALES",
@@ -231,6 +255,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 1,
     },
+    products: [
+      { id: 701, name: "오버사이즈 니트", category: "패션", price: 42000, status: "ON_SALE", salesCount: 121 },
+      { id: 702, name: "와이드 데님 팬츠", category: "패션", price: 38000, status: "ON_SALE", salesCount: 94 },
+    ],
     issues: [
       {
         type: "SALES_DECLINING",
@@ -269,6 +297,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 2,
     },
+    products: [
+      { id: 801, name: "저자극 선크림 SPF50", category: "뷰티", price: 19000, status: "ON_SALE", salesCount: 88 },
+      { id: 802, name: "약산성 클렌징 오일", category: "뷰티", price: 23000, status: "ON_SALE", salesCount: 61 },
+    ],
     issues: [
       {
         type: "LOW_REVENUE",
@@ -302,6 +334,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 4000000,
       daysSinceLastOrder: 4,
     },
+    products: [
+      { id: 901, name: "빈티지 플라워 원피스", category: "패션", price: 45000, status: "ON_SALE", salesCount: 43 },
+      { id: 902, name: "체크 패턴 셔츠", category: "패션", price: 33000, status: "SOLD_OUT", salesCount: 51 },
+    ],
     issues: [
       {
         type: "HIGH_CANCEL_RATE",
@@ -356,6 +392,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 5000000,
       daysSinceLastOrder: 16,
     },
+    products: [
+      { id: 1001, name: "스마트워치 GT3", category: "가전디지털", price: 129000, status: "ON_SALE", salesCount: 34 },
+      { id: 1002, name: "보조배터리 20000mAh", category: "가전디지털", price: 29000, status: "HIDDEN", salesCount: 22 },
+    ],
     issues: [
       {
         type: "HIGH_REFUND_RATE",
@@ -409,6 +449,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 19,
     },
+    products: [
+      { id: 1101, name: "북유럽 스타일 쿠션 커버", category: "생활용품", price: 15000, status: "SOLD_OUT", salesCount: 18 },
+      { id: 1102, name: "감성 LED 무드등", category: "생활용품", price: 24000, status: "SOLD_OUT", salesCount: 12 },
+    ],
     issues: [
       {
         type: "NO_RECENT_ORDER",
@@ -462,6 +506,10 @@ const MOCK_SELLERS = [
       minRevenueThreshold: 3000000,
       daysSinceLastOrder: 0,
     },
+    products: [
+      { id: 1201, name: "유기농 이유식 5팩 세트", category: "생활용품", price: 26000, status: "ON_SALE", salesCount: 4 },
+      { id: 1202, name: "아기 실리콘 식기 세트", category: "생활용품", price: 18000, status: "ON_SALE", salesCount: 2 },
+    ],
     issues: [],
     review: {
       totalReviews: 2,
@@ -562,6 +610,18 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     return counts;
   });
 
+  // 전체 셀러의 상품을 셀러 정보와 함께 평탄화 (전체 상품 목록 화면용)
+  const allProducts = computed(() =>
+    sellers.value.flatMap((s) =>
+      (s.products || []).map((p) => ({
+        ...p,
+        sellerId: s.id,
+        sellerName: s.name,
+        sellerGrade: s.grade
+      }))
+    )
+  );
+
   // MD가 오늘 확인해야 할 순서대로 정렬 (퇴출검토 > 주의 > 평가보류, 그 안에서는 점수 낮은 순)
   const priorityQueue = computed(() => {
     const rank = { REVIEW: 0, WARNING: 1, INSUFFICIENT: 2, EXCELLENT: 3 };
@@ -587,5 +647,6 @@ export const useEvaluationStore = defineStore("evaluation", () => {
     updateSellerStatus,
     gradeCounts,
     priorityQueue,
+    allProducts,
   };
 });
