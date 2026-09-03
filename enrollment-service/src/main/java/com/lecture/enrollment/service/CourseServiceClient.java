@@ -6,6 +6,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -85,6 +87,36 @@ public class CourseServiceClient {
             log.error("[CourseServiceClient] 강의 상세 조회 실패 - courseId: {}, error: {}",
                     courseId, e.getMessage());
             throw new RuntimeException("Course Service 강의 상세 조회 실패");
+        }
+    }
+
+    /**
+     * Course Service: 셀러(instructor_id)의 상품 ID 목록 조회
+     * - 셀러별 주문 이력(GET /api/enrollments/seller/{sellerId}) 조립 시 사용
+     * - course-service GET /api/courses/internal/seller/{sellerId} → List<CourseResponse>
+     */
+    public List<Long> getProductIdsBySeller(Long sellerId) {
+        try {
+            List<Map<String, Object>> products = webClientBuilder.build()
+                    .get()
+                    .uri("http://course-service/api/courses/internal/seller/{sellerId}", sellerId)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .block();
+
+            if (products == null || products.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return products.stream()
+                    .map(p -> p.get("id"))
+                    .filter(java.util.Objects::nonNull)
+                    .map(id -> ((Number) id).longValue())
+                    .toList();
+        } catch (Exception e) {
+            log.error("[CourseServiceClient] 셀러 상품 목록 조회 실패 - sellerId: {}, error: {}",
+                    sellerId, e.getMessage());
+            throw new RuntimeException("Course Service 셀러 상품 목록 조회 실패");
         }
     }
 

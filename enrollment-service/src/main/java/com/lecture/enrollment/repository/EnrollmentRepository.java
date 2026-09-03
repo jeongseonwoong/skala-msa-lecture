@@ -16,6 +16,9 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     boolean existsByUserIdAndCourseId(Long userId, Long courseId);
 
-    // 수강 완료(ACTIVE)된 강의 ID 목록 - 추천 서비스용
+    // 수강 완료(COMPLETED)된 강의 ID 목록 - 추천 서비스용
     List<Enrollment> findByUserIdAndStatusIn(Long userId, List<Enrollment.Status> statuses);
+
+    // 셀러 상품(courseId) 목록에 속한 주문 전체 - 셀러 평가 서비스용
+    List<Enrollment> findByCourseIdIn(List<Long> courseIds);
 }

@@ -58,6 +58,18 @@ public class EnrollmentController {
     }
 
     /**
+     * GET /enrollments/seller/{sellerId} - 셀러별 주문 이력 조회 (셀러 평가 서비스용)
+     */
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<EnrollmentDto.ApiResponse<List<EnrollmentDto.SellerOrderResponse>>> getSellerOrders(
+            @PathVariable Long sellerId) {
+
+        List<EnrollmentDto.SellerOrderResponse> response =
+                enrollmentService.getOrdersBySeller(sellerId);
+        return ResponseEntity.ok(EnrollmentDto.ApiResponse.success(response));
+    }
+
+    /**
      * GET /enrollments/internal/history/{userId} - 수강 이력 조회 (Recommend Service용)
      */
     @GetMapping("/internal/history/{userId}")

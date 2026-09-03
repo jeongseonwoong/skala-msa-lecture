@@ -41,13 +41,14 @@ public class Enrollment {
     private LocalDateTime updatedAt;
 
     public enum Status {
-        PENDING,   // 수강신청 완료, 결제 대기
-        ACTIVE,    // 결제 완료, 수강 활성화
-        CANCELLED  // 취소
+        PENDING,    // 주문 생성, 결제 대기
+        COMPLETED,  // 결제 완료된 정상 주문
+        CANCELLED,  // 취소
+        RETURNED    // 반품
     }
 
-    public void activate() {
-        this.status = Status.ACTIVE;
+    public void complete() {
+        this.status = Status.COMPLETED;
     }
 
     public void cancel() {

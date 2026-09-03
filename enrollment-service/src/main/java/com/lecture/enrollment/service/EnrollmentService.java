@@ -36,12 +36,10 @@ public class EnrollmentService {
      */
     public EnrollmentDto.EnrollmentResponse enroll(Long userId, Long courseId) {
         if (!courseServiceClient.existsCourse(courseId)) {
-            throw new IllegalArgumentException("존재하지 않는 강의입니다: " + courseId);
+            throw new IllegalArgumentException("존재하지 않는 상품입니다: " + courseId);
         }
 
-        if (enrollmentRepository.existsByUserIdAndCourseId(userId, courseId)) {
-            throw new IllegalArgumentException("이미 수강신청한 강의입니다");
-        }
+        // 한 구매자가 같은 상품을 여러 번 주문할 수 있으므로 중복 주문 검사를 하지 않는다
 
         Enrollment enrollment = enrollmentWriteService.createPendingEnrollment(userId, courseId);
 
@@ -60,7 +58,7 @@ public class EnrollmentService {
                 .orElseThrow(() -> new IllegalArgumentException(
                         "수강 정보를 찾을 수 없습니다 - userId: " + userId + ", courseId: " + courseId));
 
-        enrollment.activate();
+        enrollment.complete();
 
         courseServiceClient.increaseEnrollmentCount(courseId);
 
@@ -118,7 +116,7 @@ public class EnrollmentService {
      */
     public EnrollmentDto.EnrollmentHistoryResponse getEnrollmentHistory(Long userId) {
         List<Long> activeCourseIds = enrollmentRepository
-                .findByUserIdAndStatus(userId, Enrollment.Status.ACTIVE)
+                .findByUserIdAndStatus(userId, Enrollment.Status.COMPLETED)
                 .stream()
                 .map(Enrollment::getCourseId)
                 .collect(Collectors.toList());
@@ -129,15 +127,33 @@ public class EnrollmentService {
                 .build();
     }
 
+    /**
+     * 셀러별 주문 이력 조회 - 셀러 평가 서비스용
+     * 1. course-service에서 셀러(instructorId)의 상품 ID 목록을 받아온다
+     * 2. 해당 상품들에 속한 모든 주문을 반환한다 (상태 무관)
+     */
+    public List<EnrollmentDto.SellerOrderResponse> getOrdersBySeller(Long sellerId) {
+        List<Long> productIds = courseServiceClient.getProductIdsBySeller(sellerId);
+        if (productIds.isEmpty()) {
+            return List.of();
+        }
+
+        return enrollmentRepository.findByCourseIdIn(productIds).stream()
+                .map(EnrollmentDto.SellerOrderResponse::from)
+                .collect(Collectors.toList());
+    }
+
     private String normalizeCategory(String category) {
         if (category == null) return null;
 
         return switch (category) {
-            case "BACKEND" -> "백엔드";
-            case "FRONTEND" -> "프론트엔드";
-            case "DEVOPS" -> "DevOps";
-            case "DATA" -> "데이터";
-            case "AI" -> "AI";
+            case "FASHION" -> "패션";
+            case "BEAUTY" -> "뷰티";
+            case "FOOD" -> "식품";
+            case "DIGITAL" -> "디지털";
+            case "HOME" -> "홈/리빙";
+            case "SPORTS" -> "스포츠";
+            case "BOOK" -> "도서";
             default -> category;
         };
     }

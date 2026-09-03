@@ -72,6 +72,29 @@ public class EnrollmentDto {
         }
     }
 
+    // 셀러 평가 서비스용: 셀러별 주문 이력 항목
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SellerOrderResponse {
+        private Long orderId;
+        private Long buyerId;
+        private Long productId;
+        private Enrollment.Status status;
+        private LocalDateTime createdAt;
+
+        public static SellerOrderResponse from(Enrollment e) {
+            return SellerOrderResponse.builder()
+                    .orderId(e.getId())
+                    .buyerId(e.getUserId())
+                    .productId(e.getCourseId())
+                    .status(e.getStatus())
+                    .createdAt(e.getCreatedAt())
+                    .build();
+        }
+    }
+
     // 추천 서비스용: 수강 이력 조회 응답
     @Getter
     @NoArgsConstructor
