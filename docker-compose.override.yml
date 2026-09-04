@@ -8,10 +8,11 @@
 # 그다음:     docker compose up -d
 #
 services:
-  # auth-server 는 소스가 없어 이미지 안의 User$Role enum 에 STUDENT/INSTRUCTOR 만 존재.
-  # 신 도메인 시드(MD/SELLER/BUYER)로 로그인하면 Hibernate enum 하이드레이션 실패 →
-  # User.java 만 재구성해 enum 에 MD/SELLER/BUYER 추가한 패치 jar 를 마운트.
-  # 재생성:  아래 scripts 참고 없음 — scratchpad 에서 수동 빌드한 산출물
+  # auth-server 는 소스가 배포 안 되는 사전 빌드 이미지. 이미지 안 User$Role enum 에는
+  # STUDENT/INSTRUCTOR 만 있어 신 도메인 시드(MD/SELLER/BUYER)로 로그인하면 Hibernate 실패.
+  # → auth-server/src/.../User.java (enum 패치본) 를 scripts/build-local.sh 가 재컴파일해
+  #   app.jar 안 User*.class 3개만 교체한 패치 jar 를 만든다. 아래는 그 산출물 마운트.
+  # 재생성:  ./scripts/build-local.sh auth-server   (auth-server/README.md 참고)
   auth-server:
     volumes:
       - ./auth-server/build-local/app.jar:/app/app.jar:ro

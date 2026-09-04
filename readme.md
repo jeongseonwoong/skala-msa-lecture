@@ -237,8 +237,11 @@ skala-msa-lecture/
 │       └── views/md/       SellerRankingView · SellerDetailView ·
 │                           MdDashboardView · ProductListView · MdWatchlistView
 │
-└── eureka-server/        (Java)   서비스 디스커버리 (소스 이해용, 수정 X)
-     # auth-server / api-gateway 는 이미지로만 배포 (소스 없음)
+├── eureka-server/        (Java)   서비스 디스커버리 (소스 이해용, 수정 X)
+│
+└── auth-server/          (부분 소스)   model/User.java(enum 패치) + README 만.
+     # 전체 소스는 이미지로만 배포. build-local.sh 가 User*.class 3개만 재컴파일해 얹는다.
+     # api-gateway 는 소스 자체가 없음 (이미지로만 배포).
 ```
 
 ---
@@ -263,7 +266,8 @@ docker images     # msa-lecture/auth-server:1.0, msa-lecture-*:latest 확인
 `docker-compose.override.yml`이 자동 병합되어, 패치한 Java jar와 recommend-service 소스를 컨테이너에 마운트한다.
 
 ```bash
-# 1) Java 서비스(user/course/enrollment)를 로컬 소스로 재컴파일 → 패치 jar 생성
+# 1) Java 서비스(auth/user/course/enrollment)를 로컬 소스로 재컴파일 → 패치 jar 생성
+#    auth-server 는 User.java 만 재컴파일해 app.jar 안 User*.class 3개만 교체한다
 ./scripts/build-local.sh
 
 # 2) 기동 (override 가 패치 jar / recommend 소스를 마운트)
@@ -272,6 +276,11 @@ docker compose up -d
 # 이후 소스만 고쳤을 때
 ./scripts/build-local.sh course-service
 docker compose restart course-service recommend-service
+
+# auth-server 를 고쳤을 때 (재기동 시 JWKS 가 바뀌므로 recommend 도 재기동)
+./scripts/build-local.sh auth-server
+docker compose up -d --force-recreate auth-server
+docker compose restart recommend-service
 ```
 
 ### B. 전체 재빌드 (Gradle/네트워크 필요)
